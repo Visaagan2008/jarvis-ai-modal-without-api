@@ -1,0 +1,2054 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JARVIS SYSTEM CONSOLE</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Inter:wght@300;400;500;600;700&family=Orbitron:wght@500;700;900&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-color: #040814;
+            --panel-bg: rgba(10, 18, 42, 0.65);
+            --border-color: rgba(0, 240, 255, 0.15);
+            --border-color-glow: rgba(0, 240, 255, 0.4);
+            --cyan: #00f0ff;
+            --purple: #d946ef;
+            --green: #22c55e;
+            --red: #ef4444;
+            --text-primary: #e2e8f0;
+            --text-secondary: #94a3b8;
+            --accent-glow: 0 0 15px rgba(0, 240, 255, 0.25);
+            --accent-glow-strong: 0 0 25px rgba(0, 240, 255, 0.5);
+            --font-display: 'Orbitron', sans-serif;
+            --font-sans: 'Inter', sans-serif;
+            --font-mono: 'Fira Code', monospace;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-sans);
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(0, 240, 255, 0.05) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(217, 70, 239, 0.05) 0%, transparent 40%),
+                linear-gradient(rgba(18, 24, 38, 0.4) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(18, 24, 38, 0.4) 1px, transparent 1px);
+            background-size: 100% 100%, 100% 100%, 30px 30px, 30px 30px;
+        }
+
+        /* Layout */
+        .sidebar {
+            width: 320px;
+            background: rgba(6, 10, 26, 0.85);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            padding: 24px;
+            z-index: 10;
+            backdrop-filter: blur(10px);
+        }
+
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            position: relative;
+        }
+
+        /* Sidebar Elements */
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .brand-title h1 {
+            font-family: var(--font-display);
+            font-size: 20px;
+            letter-spacing: 2px;
+            color: #fff;
+            text-shadow: 0 0 10px rgba(0, 240, 255, 0.5);
+        }
+
+        .brand-title p {
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            color: var(--cyan);
+        }
+
+        /* Jarvis Core ARC Reactor Visualizer */
+        .reactor-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 20px 0;
+            position: relative;
+            height: 160px;
+        }
+
+        .reactor {
+            width: 130px;
+            height: 130px;
+            border-radius: 50%;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .reactor-ring-outer {
+            width: 100%;
+            height: 100%;
+            border: 2px dashed var(--cyan);
+            border-radius: 50%;
+            position: absolute;
+            animation: rotateClockwise 20s linear infinite;
+            opacity: 0.6;
+            box-shadow: var(--accent-glow);
+        }
+
+        .reactor-ring-mid {
+            width: 80%;
+            height: 80%;
+            border: 2px dotted var(--purple);
+            border-radius: 50%;
+            position: absolute;
+            animation: rotateCounterClockwise 15s linear infinite;
+            opacity: 0.7;
+        }
+
+        .reactor-ring-inner {
+            width: 60%;
+            height: 60%;
+            border: 1px solid rgba(0, 240, 255, 0.3);
+            border-radius: 50%;
+            position: absolute;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .reactor-core {
+            width: 40px;
+            height: 40px;
+            background: radial-gradient(circle, #fff 0%, var(--cyan) 60%, rgba(0, 240, 255, 0) 100%);
+            border-radius: 50%;
+            box-shadow: 0 0 20px var(--cyan), 0 0 40px var(--purple);
+            z-index: 2;
+            transition: all 0.3s ease;
+        }
+
+        .reactor.thinking .reactor-core {
+            animation: pulseCore 0.8s ease-in-out infinite alternate;
+            background: radial-gradient(circle, #fff 0%, var(--purple) 60%, rgba(217, 70, 239, 0) 100%);
+            box-shadow: 0 0 20px var(--purple), 0 0 45px var(--cyan);
+        }
+
+        .reactor.thinking .reactor-ring-outer {
+            animation-duration: 3s;
+            border-color: var(--purple);
+        }
+
+        .reactor.thinking .reactor-ring-mid {
+            animation-duration: 2s;
+            border-color: var(--cyan);
+        }
+
+        /* Nav Menu */
+        .nav-menu {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 20px;
+            flex: 1;
+        }
+
+        .nav-btn {
+            background: rgba(15, 23, 42, 0.4);
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            padding: 14px 18px;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-family: var(--font-display);
+            font-size: 13px;
+            letter-spacing: 1px;
+            text-align: left;
+            transition: all 0.25s ease;
+        }
+
+        .nav-btn svg {
+            width: 18px;
+            height: 18px;
+            fill: currentColor;
+        }
+
+        .nav-btn:hover {
+            color: var(--cyan);
+            border-color: var(--cyan);
+            background: rgba(0, 240, 255, 0.05);
+            box-shadow: var(--accent-glow);
+        }
+
+        .nav-btn.active {
+            color: #fff;
+            background: linear-gradient(90deg, rgba(0, 240, 255, 0.15) 0%, rgba(0, 240, 255, 0.02) 100%);
+            border-left: 3px solid var(--cyan);
+            border-top-color: var(--border-color-glow);
+            border-right-color: var(--border-color);
+            border-bottom-color: var(--border-color-glow);
+            box-shadow: var(--accent-glow);
+        }
+
+        /* Sidebar Status Block */
+        .status-block {
+            margin-top: auto;
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid var(--border-color);
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 11px;
+        }
+
+        .status-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        .status-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .status-label {
+            color: var(--text-secondary);
+            text-transform: uppercase;
+        }
+
+        .status-value {
+            font-family: var(--font-mono);
+            font-weight: 500;
+        }
+
+        .status-value.online {
+            color: var(--green);
+            text-shadow: 0 0 5px rgba(34, 197, 94, 0.4);
+        }
+
+        /* Header */
+        .header {
+            height: 70px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 30px;
+            background: rgba(6, 10, 26, 0.5);
+            backdrop-filter: blur(10px);
+        }
+
+        .header-title {
+            font-family: var(--font-display);
+            font-size: 15px;
+            letter-spacing: 1px;
+            color: var(--text-secondary);
+        }
+
+        .header-title span {
+            color: var(--cyan);
+            text-shadow: var(--accent-glow);
+        }
+
+        .user-badge {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(0, 240, 255, 0.05);
+            padding: 8px 15px;
+            border-radius: 20px;
+            border: 1px solid var(--border-color);
+            font-family: var(--font-display);
+            font-size: 11px;
+            letter-spacing: 1px;
+        }
+
+        .user-dot {
+            width: 8px;
+            height: 8px;
+            background-color: var(--cyan);
+            border-radius: 50%;
+            box-shadow: 0 0 8px var(--cyan);
+        }
+
+        /* Content Views */
+        .view-pane {
+            flex: 1;
+            padding: 30px;
+            overflow-y: auto;
+            display: none;
+        }
+
+        .view-pane.active {
+            display: block;
+        }
+
+        /* Dashboard Overview Grid */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .metric-card {
+            background: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 24px;
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .metric-card:hover {
+            border-color: var(--cyan);
+            box-shadow: var(--accent-glow);
+        }
+
+        .metric-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .metric-title {
+            font-family: var(--font-display);
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--text-secondary);
+        }
+
+        .metric-icon {
+            color: var(--cyan);
+        }
+
+        .metric-body {
+            display: flex;
+            align-items: baseline;
+            gap: 10px;
+        }
+
+        .metric-value {
+            font-family: var(--font-display);
+            font-size: 36px;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .metric-unit {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Glowing Progress Bars */
+        .progress-container {
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 3px;
+            margin-top: 15px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--cyan), var(--purple));
+            box-shadow: 0 0 10px rgba(0, 240, 255, 0.5);
+            width: 0%;
+            transition: width 1s ease-in-out;
+        }
+
+        /* Large System Info Card */
+        .system-info-card {
+            background: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 25px;
+            backdrop-filter: blur(10px);
+        }
+
+        .system-info-card h3 {
+            font-family: var(--font-display);
+            font-size: 16px;
+            letter-spacing: 1px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            padding-bottom: 10px;
+            color: #fff;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .info-item {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .info-label {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-secondary);
+        }
+
+        .info-value {
+            font-family: var(--font-mono);
+            font-size: 14px;
+            color: var(--cyan);
+        }
+
+        /* Chat view */
+        .chat-view-container {
+            display: flex;
+            flex-direction: column;
+            height: calc(100vh - 130px);
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding-right: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .chat-message {
+            max-width: 80%;
+            padding: 16px 20px;
+            border-radius: 12px;
+            line-height: 1.6;
+            font-size: 14px;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .chat-message.user {
+            background: rgba(0, 240, 255, 0.05);
+            border: 1px solid rgba(0, 240, 255, 0.2);
+            align-self: flex-end;
+            border-bottom-right-radius: 2px;
+        }
+
+        .chat-message.jarvis {
+            background: rgba(15, 23, 42, 0.7);
+            border: 1px solid var(--border-color);
+            align-self: flex-start;
+            border-bottom-left-radius: 2px;
+        }
+
+        .chat-message h4 {
+            font-family: var(--font-display);
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+
+        .chat-message.user h4 {
+            color: var(--cyan);
+        }
+
+        .chat-message.jarvis h4 {
+            color: var(--purple);
+        }
+
+        /* Chat suggestions buttons */
+        .suggestions-row {
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            padding-bottom: 10px;
+            margin-bottom: 10px;
+        }
+
+        .suggestion-btn {
+            background: rgba(15, 23, 42, 0.4);
+            border: 1px solid var(--border-color);
+            color: var(--cyan);
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 11px;
+            font-family: var(--font-display);
+            letter-spacing: 0.5px;
+            white-space: nowrap;
+            transition: all 0.2s ease;
+        }
+
+        .suggestion-btn:hover {
+            background: rgba(0, 240, 255, 0.1);
+            border-color: var(--cyan);
+            box-shadow: var(--accent-glow);
+        }
+
+        /* Code block stylings */
+        pre {
+            background: #010409 !important;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            overflow-x: auto;
+            margin: 12px 0;
+            font-family: var(--font-mono);
+            font-size: 13px;
+        }
+
+        code {
+            font-family: var(--font-mono);
+            font-size: 13px;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        pre code {
+            background: none;
+            padding: 0;
+        }
+
+        /* Action block for suggested powershell commands */
+        .system-action-block {
+            background: rgba(217, 70, 239, 0.05);
+            border: 1px dashed var(--purple);
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .action-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .action-badge {
+            background: var(--purple);
+            color: #fff;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-family: var(--font-display);
+            font-size: 9px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .action-cmd {
+            font-family: var(--font-mono);
+            background: rgba(0,0,0,0.3);
+            padding: 10px;
+            border-radius: 4px;
+            color: #f1f5f9;
+            font-size: 12px;
+            overflow-x: auto;
+        }
+
+        .action-btn {
+            align-self: flex-end;
+            background: var(--purple);
+            color: #fff;
+            border: none;
+            padding: 8px 18px;
+            border-radius: 6px;
+            font-family: var(--font-display);
+            font-size: 11px;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            box-shadow: 0 0 10px rgba(217, 70, 239, 0.4);
+        }
+
+        .action-btn:hover {
+            background: #e879f9;
+            box-shadow: 0 0 15px rgba(217, 70, 239, 0.7);
+        }
+
+        .chat-input-wrapper {
+            display: flex;
+            gap: 15px;
+            background: rgba(15, 23, 42, 0.7);
+            border: 1px solid var(--border-color);
+            padding: 8px;
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+        }
+
+        .chat-input-wrapper input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            outline: none;
+            color: #fff;
+            padding: 12px 15px;
+            font-size: 14px;
+            font-family: var(--font-sans);
+        }
+
+        .chat-input-wrapper button {
+            background: var(--cyan);
+            color: #040814;
+            border: none;
+            padding: 0 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: var(--font-display);
+            font-weight: bold;
+            font-size: 12px;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            box-shadow: var(--accent-glow);
+            transition: all 0.25s ease;
+        }
+
+        .chat-input-wrapper button:hover {
+            box-shadow: var(--accent-glow-strong);
+            background: #38bdf8;
+        }
+
+        /* Processes view table */
+        .process-table-container {
+            background: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            height: calc(100vh - 130px);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .process-table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .process-table-header h3 {
+            font-family: var(--font-display);
+            font-size: 16px;
+            letter-spacing: 1px;
+            color: #fff;
+        }
+
+        .refresh-btn {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 11px;
+            font-family: var(--font-display);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s ease;
+        }
+
+        .refresh-btn:hover {
+            border-color: var(--cyan);
+            color: var(--cyan);
+        }
+
+        .process-list-wrapper {
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 13px;
+        }
+
+        th {
+            font-family: var(--font-display);
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-secondary);
+            border-bottom: 1px solid var(--border-color);
+            padding: 12px;
+        }
+
+        td {
+            padding: 12px;
+            border-bottom: 1px solid rgba(255,255,255,0.03);
+            font-family: var(--font-mono);
+        }
+
+        tr:hover td {
+            background: rgba(0, 240, 255, 0.02);
+            color: var(--cyan);
+        }
+
+        .kill-btn {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--red);
+            border: 1px solid rgba(239, 68, 68, 0.25);
+            padding: 4px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 10px;
+            font-family: var(--font-display);
+            letter-spacing: 0.5px;
+            transition: all 0.2s ease;
+        }
+
+        .kill-btn:hover {
+            background: var(--red);
+            color: #fff;
+            box-shadow: 0 0 10px rgba(239, 68, 68, 0.4);
+        }
+
+        /* Terminal view */
+        .terminal-container {
+            background: #02050f;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            height: calc(100vh - 130px);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.8);
+        }
+
+        .terminal-header {
+            background: rgba(10, 18, 42, 0.8);
+            border-bottom: 1px solid var(--border-color);
+            padding: 10px 20px;
+            font-family: var(--font-display);
+            font-size: 11px;
+            letter-spacing: 1px;
+            color: var(--cyan);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .terminal-log {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            font-family: var(--font-mono);
+            font-size: 13px;
+            line-height: 1.6;
+            color: #cbd5e1;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .term-entry {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .term-prompt {
+            color: var(--purple);
+            font-weight: 500;
+        }
+
+        .term-stdout {
+            color: #f8fafc;
+            white-space: pre-wrap;
+            background: rgba(255,255,255,0.01);
+            padding: 5px;
+            border-radius: 4px;
+        }
+
+        .term-stderr {
+            color: var(--red);
+            white-space: pre-wrap;
+        }
+
+        .terminal-input-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: #01030a;
+            border-top: 1px solid var(--border-color);
+            padding: 12px 20px;
+        }
+
+        .terminal-input-row span {
+            color: var(--cyan);
+            font-family: var(--font-mono);
+            font-weight: bold;
+        }
+
+        .terminal-input-row input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            outline: none;
+            color: #fff;
+            font-family: var(--font-mono);
+            font-size: 13px;
+        }
+
+        /* Overlay modal for confirmations */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(2, 5, 15, 0.85);
+            backdrop-filter: blur(8px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal-card {
+            background: var(--panel-bg);
+            border: 1px solid var(--cyan);
+            border-radius: 12px;
+            padding: 30px;
+            width: 480px;
+            box-shadow: var(--accent-glow-strong);
+            text-align: center;
+            transform: scale(0.9);
+            transition: transform 0.3s ease;
+        }
+
+        .modal-overlay.active .modal-card {
+            transform: scale(1);
+        }
+
+        .modal-title {
+            font-family: var(--font-display);
+            font-size: 16px;
+            letter-spacing: 1px;
+            color: #fff;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+        }
+
+        .modal-body {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 25px;
+            line-height: 1.5;
+            word-break: break-all;
+        }
+
+        .modal-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .modal-btn {
+            padding: 10px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-family: var(--font-display);
+            font-size: 11px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            transition: all 0.2s ease;
+        }
+
+        .modal-btn.confirm {
+            background: var(--cyan);
+            color: #040814;
+            border: none;
+            box-shadow: var(--accent-glow);
+        }
+
+        .modal-btn.confirm:hover {
+            box-shadow: var(--accent-glow-strong);
+            background: #38bdf8;
+        }
+
+        .modal-btn.cancel {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+        }
+
+        .modal-btn.cancel:hover {
+            border-color: #fff;
+            color: #fff;
+        }
+
+        /* Animations */
+        @keyframes rotateClockwise {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes rotateCounterClockwise {
+            0% { transform: rotate(360deg); }
+            100% { transform: rotate(0deg); }
+        }
+
+        @keyframes pulseCore {
+            0% { transform: scale(0.9); opacity: 0.7; }
+            100% { transform: scale(1.15); opacity: 1; }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Custom Scrollbar for sleek UI */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(0,0,0,0.1);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(0, 240, 255, 0.2);
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--cyan);
+        }
+
+        /* --- iOS 18 / Mobile Responsive Styles --- */
+        .menu-toggle-btn {
+            background: rgba(0, 240, 255, 0.05);
+            border: 1px solid var(--border-color);
+            color: var(--cyan);
+            padding: 8px;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.25s ease;
+        }
+        .menu-toggle-btn:hover {
+            border-color: var(--cyan);
+            box-shadow: var(--accent-glow);
+        }
+        .mobile-sidebar-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(2, 5, 15, 0.6);
+            backdrop-filter: blur(4px);
+            z-index: 9;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+        .mobile-sidebar-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                flex-direction: column;
+                height: 100vh;
+                height: -webkit-fill-available; /* Support iOS Safari keyboard overlays */
+            }
+            .sidebar {
+                position: fixed;
+                top: 0;
+                left: -320px;
+                height: 100vh;
+                width: 300px;
+                z-index: 10;
+                box-shadow: 5px 0 25px rgba(0, 0, 0, 0.8);
+                transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            }
+            .sidebar.mobile-open {
+                left: 0;
+            }
+            .menu-toggle-btn {
+                display: flex !important;
+            }
+            .header {
+                padding: 0 15px;
+                height: 60px;
+            }
+            .header-title {
+                font-size: 12px;
+                display: none; /* Hide header text to save space on mobile */
+            }
+            .user-badge {
+                padding: 6px 12px;
+                font-size: 10px;
+            }
+            .view-pane {
+                padding: 15px;
+                height: calc(100vh - 60px);
+                overflow-y: auto;
+            }
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+            .info-grid {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+            .chat-view-container {
+                height: calc(100vh - 120px);
+            }
+            .chat-message {
+                max-width: 90%;
+                padding: 12px 16px;
+                font-size: 13px;
+            }
+            .suggestions-row {
+                gap: 6px;
+                margin-bottom: 5px;
+            }
+            .suggestion-btn {
+                padding: 6px 12px;
+                font-size: 10px;
+            }
+            .chat-input-wrapper {
+                padding: 6px;
+                gap: 5px;
+            }
+            .chat-input-wrapper input {
+                padding: 8px 10px;
+                font-size: 13px;
+            }
+            .chat-input-wrapper button {
+                padding: 0 14px;
+                font-size: 10px;
+            }
+            .process-table-container {
+                padding: 10px;
+                height: calc(100vh - 120px);
+            }
+            .process-table-header h3 {
+                font-size: 13px;
+            }
+            table {
+                font-size: 11px;
+            }
+            th, td {
+                padding: 8px 6px;
+            }
+            .terminal-container {
+                height: calc(100vh - 120px);
+            }
+            .terminal-log {
+                padding: 10px;
+                font-size: 11px;
+            }
+            .terminal-input-row {
+                padding: 8px 12px;
+            }
+            .terminal-input-row input {
+                font-size: 11px;
+            }
+            .modal-card {
+                width: 90%;
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- MOBILE OVERLAY -->
+    <div id="mobileSidebarOverlay" onclick="toggleMobileMenu()" class="mobile-sidebar-overlay"></div>
+
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+        <div class="brand">
+            <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect x="2" y="2" width="28" height="28" rx="6" stroke="#00f0ff" stroke-width="2" stroke-dasharray="4 2"/>
+                <path d="M16 8L22 18H10L16 8Z" fill="#00f0ff"/>
+                <circle cx="16" cy="22" r="3" fill="#d946ef"/>
+            </svg>
+            <div class="brand-title">
+                <h1>JARVIS</h1>
+                <p>LAPTOP CONSOLE</p>
+            </div>
+        </div>
+
+        <!-- ARC Reactor -->
+        <div class="reactor-container">
+            <div class="reactor" id="jarvisReactor">
+                <div class="reactor-ring-outer"></div>
+                <div class="reactor-ring-mid"></div>
+                <div class="reactor-ring-inner"></div>
+                <div class="reactor-core"></div>
+            </div>
+        </div>
+
+        <!-- Nav -->
+        <div class="nav-menu">
+            <button class="nav-btn active" onclick="switchView('dashboard')">
+                <svg viewBox="0 0 24 24"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></svg>
+                Dashboard
+            </button>
+            <button class="nav-btn" onclick="switchView('chat')">
+                <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 9h12v2H6V9zm8 5H6v-2h8v2zm4-6H6V6h12v2z"/></svg>
+                Jarvis Chat
+            </button>
+            <button class="nav-btn" onclick="switchView('processes')">
+                <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 10h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/></svg>
+                Processes
+            </button>
+            <button class="nav-btn" onclick="switchView('terminal')">
+                <svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm-8 12H6v-2h6v2zm4-4h-4v-2h4v2z"/></svg>
+                Terminal
+            </button>
+            <button class="nav-btn" onclick="switchView('settings')">
+                <svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+                Settings
+            </button>
+        </div>
+
+        <!-- Uptime / Security Block -->
+        <div class="status-block">
+            <div class="status-item">
+                <span class="status-label">Security Shield</span>
+                <span class="status-value online">Active</span>
+            </div>
+            <div class="status-item">
+                <span class="status-label">Power Core</span>
+                <span class="status-value" style="color: var(--cyan);">100%</span>
+            </div>
+            <div class="status-item">
+                <span class="status-label">Active Model</span>
+                <span class="status-value" id="activeModelStatus" style="color: var(--cyan);">--</span>
+            </div>
+            <div class="status-item">
+                <span class="status-label">Gemini Link</span>
+                <span class="status-value" id="apiKeyStatus" style="color: var(--green);">Secure Connection</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN BODY -->
+    <div class="main-content">
+        <!-- Header -->
+        <div class="header">
+            <button id="menuToggleBtn" onclick="toggleMobileMenu()" class="menu-toggle-btn" style="display: none; margin-right: 12px;" title="Toggle System Menu">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="3" y1="12" x2="21" y2="12"></line>
+                    <line x1="3" y1="6" x2="21" y2="6"></line>
+                    <line x1="3" y1="18" x2="21" y2="18"></line>
+                </svg>
+            </button>
+            <div class="header-title">System Decoupler Mode: <span>Enabled</span></div>
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <button id="muteBtn" onclick="toggleMute()" style="background: rgba(0, 240, 255, 0.05); border: 1px solid var(--border-color); color: var(--cyan); border-radius: 20px; padding: 8px 15px; cursor: pointer; display: flex; align-items: center; gap: 8px; font-family: var(--font-display); font-size: 11px; letter-spacing: 1px; transition: all 0.25s ease;">
+                    <svg id="speakerIcon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: block;">
+                        <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
+                        <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/>
+                    </svg>
+                    <span>VOICE: ON</span>
+                </button>
+                <div class="user-badge">
+                    <div class="user-dot"></div>
+                    Visaagan's System
+                </div>
+            </div>
+        </div>
+
+        <!-- 1. DASHBOARD VIEW -->
+        <div id="dashboardView" class="view-pane active">
+            <div class="dashboard-grid">
+                <!-- CPU Metric -->
+                <div class="metric-card">
+                    <div class="metric-header">
+                        <span class="metric-title">CPU Utilization</span>
+                        <svg class="metric-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="4" y="4" width="16" height="16" rx="2"/>
+                            <path d="M9 1v3M15 1v3M9 20v3M15 20v3M20 9h3M20 15h3M1 9h3M1 15h3"/>
+                        </svg>
+                    </div>
+                    <div class="metric-body">
+                        <span class="metric-value" id="cpuVal">--</span>
+                        <span class="metric-unit">%</span>
+                    </div>
+                    <div class="progress-container">
+                        <div class="progress-bar" id="cpuBar"></div>
+                    </div>
+                </div>
+
+                <!-- RAM Metric -->
+                <div class="metric-card">
+                    <div class="metric-header">
+                        <span class="metric-title">RAM Usage</span>
+                        <svg class="metric-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="3" width="18" height="18" rx="2"/>
+                            <path d="M7 21v-4M17 21v-4M21 7h-4M21 17h-4M3 7h4M3 17h4"/>
+                        </svg>
+                    </div>
+                    <div class="metric-body">
+                        <span class="metric-value" id="ramVal">--</span>
+                        <span class="metric-unit">GB</span>
+                    </div>
+                    <div class="progress-container">
+                        <div class="progress-bar" id="ramBar"></div>
+                    </div>
+                </div>
+
+                <!-- Storage Metric -->
+                <div class="metric-card">
+                    <div class="metric-header">
+                        <span class="metric-title">Storage Drive</span>
+                        <svg class="metric-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M22 12H2M22 6H2M22 18H2"/>
+                        </svg>
+                    </div>
+                    <div class="metric-body">
+                        <span class="metric-value" id="diskVal">--</span>
+                        <span class="metric-unit">GB Free</span>
+                    </div>
+                    <div class="progress-container">
+                        <div class="progress-bar" id="diskBar"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Full System Info Details -->
+            <div class="system-info-card">
+                <h3>Hardware & System Specifications</h3>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <span class="info-label">Computer Name</span>
+                        <span class="info-value" id="compName">Loading...</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Operating System</span>
+                        <span class="info-value" id="osCaption">Loading...</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Manufacturer</span>
+                        <span class="info-value" id="sysManufacturer">Loading...</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">System Model</span>
+                        <span class="info-value" id="sysModel">Loading...</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Active Host Link</span>
+                        <span class="info-value" style="color: var(--green);">Secure Localhost (Port 9000)</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Memory Allocation</span>
+                        <span class="info-value" id="ramDetail">Loading...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. JARVIS CHAT VIEW -->
+        <div id="chatView" class="view-pane">
+            <div class="chat-view-container">
+                <!-- Chat Feed -->
+                <div class="chat-messages" id="chatFeed">
+                    <div class="chat-message jarvis">
+                        <h4>Jarvis Core</h4>
+                        <p>Welcome back, Visaagan. All local laptop systems are green. I can run diagnoses, look up details, or write scripts. What is our objective today?</p>
+                    </div>
+                </div>
+
+                <!-- Suggested Quick Queries -->
+                <div class="suggestions-row">
+                    <button class="suggestion-btn" onclick="sendQuickMessage('Show me a quick summary of my machine info.')">💻 Machine Info</button>
+                    <button class="suggestion-btn" onclick="sendQuickMessage('Check what processes are eating the most memory.')">📈 Top Processes</button>
+                    <button class="suggestion-btn" onclick="sendQuickMessage('Write a quick PowerShell script to list recent error events.')">📜 Log Audit</button>
+                    <button class="suggestion-btn" onclick="sendQuickMessage('Perform a research summary on deep learning models.')">🔬 Research AI</button>
+                </div>
+
+                <!-- Input box -->
+                <div class="chat-input-wrapper">
+                    <input type="text" id="chatInput" placeholder="Awaiting vocal inputs or terminal commands..." onkeydown="handleChatKey(event)">
+                    <button id="uploadBtn" onclick="uploadFile()" style="background: transparent; border: none; color: var(--cyan); cursor: pointer; padding: 0 12px; display: flex; align-items: center; justify-content: center; transition: all 0.25s ease;" title="Upload file attachment">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/>
+                        </svg>
+                    </button>
+                    <button id="voiceBtn" onclick="toggleVoice()" style="background: transparent; border: none; color: var(--cyan); cursor: pointer; padding: 0 12px; display: flex; align-items: center; justify-content: center; transition: all 0.25s ease;" title="Toggle voice command">
+                        <svg id="micIcon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: block;">
+                            <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/>
+                            <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+                            <line x1="12" x2="12" y1="19" y2="22"/>
+                        </svg>
+                    </button>
+                    <button id="sendBtn" onclick="sendMessage()">Transmit</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. PROCESSES VIEW -->
+        <div id="processesView" class="view-pane">
+            <div class="process-table-container">
+                <div class="process-table-header">
+                    <h3>Active System Processes (Top 20 Resource Consumers)</h3>
+                    <button class="refresh-btn" onclick="updateProcesses()">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/>
+                        </svg>
+                        Refresh List
+                    </button>
+                </div>
+                <div class="process-list-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Process ID</th>
+                                <th>Process Name</th>
+                                <th>CPU time (s)</th>
+                                <th>Memory Usage (MB)</th>
+                                <th>Action Control</th>
+                            </tr>
+                        </thead>
+                        <tbody id="processListBody">
+                            <tr>
+                                <td colspan="5" style="text-align: center; color: var(--text-secondary);">Querying host kernel...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4. TERMINAL VIEW -->
+        <div id="terminalView" class="view-pane">
+            <div class="terminal-container">
+                <div class="terminal-header">
+                    <span>HOST SHELL LOG CONSOLE</span>
+                    <span style="font-family: var(--font-mono); font-size: 10px;">VISAAGAN@LAPTOP</span>
+                </div>
+                <div class="terminal-log" id="termLog">
+                    <div class="term-entry">
+                        <span class="term-prompt">PowerShell v5+ Active. System decoupled terminal channel online.</span>
+                    </div>
+                </div>
+                <div class="terminal-input-row">
+                    <span>PS C:\Users\VISAAGAN&gt;</span>
+                    <input type="text" id="termInput" placeholder="Enter custom PowerShell commands here..." onkeydown="handleTermKey(event)">
+                </div>
+            </div>
+        </div>
+
+        <!-- 5. SETTINGS VIEW -->
+        <div id="settingsView" class="view-pane">
+            <div class="system-info-card">
+                <h3>Jarvis Matrix Settings</h3>
+                <div style="display: flex; flex-direction: column; gap: 20px; margin-top: 15px;">
+                    <div class="info-item" style="gap: 10px;">
+                        <span class="info-label" style="font-size: 12px;">Gemini API Key</span>
+                        <div style="display: flex; gap: 10px; align-items: center;">
+                            <input type="password" id="settingsApiKey" style="flex: 1; background: rgba(0,0,0,0.3); border: 1px solid var(--border-color); color: #fff; padding: 12px; border-radius: 8px; font-family: var(--font-mono); font-size: 14px;" placeholder="Enter custom API Key (AIzaSy...)">
+                            <button onclick="toggleApiKeyVisibility()" style="background: rgba(0, 240, 255, 0.05); border: 1px solid var(--border-color); color: var(--cyan); padding: 12px; border-radius: 8px; cursor: pointer; font-family: var(--font-display); font-size: 11px;">SHOW/HIDE</button>
+                        </div>
+                        <span style="font-size: 11px; color: var(--text-secondary);">If empty, the system uses the default built-in API Key. Enter your own key if you encounter 429 Rate Limits.</span>
+                    </div>
+                    
+                    <div class="info-item" style="gap: 10px;">
+                        <span class="info-label" style="font-size: 12px;">Gemini Cognitive Model</span>
+                        <select id="settingsModel" style="background: #0a122a; border: 1px solid var(--border-color); color: #fff; padding: 12px; border-radius: 8px; font-family: var(--font-sans); font-size: 14px; outline: none; cursor: pointer;">
+                            <option value="gemini-2.5-flash">Gemini 2.5 Flash (Recommended - Stable & Fast)</option>
+                            <option value="gemini-2.0-flash">Gemini 2.0 Flash</option>
+                            <option value="gemini-1.5-flash">Gemini 1.5 Flash</option>
+                            <option value="gemini-3.5-flash">Gemini 3.5 Flash (Quota-limited on Free Tier)</option>
+                            <option value="gemini-2.5-pro">Gemini 2.5 Pro (High Quality)</option>
+                            <option value="gemini-3-flash-preview">Gemini 3 Flash Preview</option>
+                            <option value="gemini-3.1-flash-lite">Gemini 3.1 Flash Lite</option>
+                        </select>
+                        <span style="font-size: 11px; color: var(--text-secondary);">Select the model used for cognitive reasoning. gemini-2.5-flash is stable and highly performant.</span>
+                    </div>
+
+                    <div style="display: flex; gap: 15px; margin-top: 10px;">
+                        <button onclick="saveSettings()" style="background: var(--cyan); color: #040814; border: none; padding: 12px 24px; border-radius: 8px; font-family: var(--font-display); font-weight: bold; font-size: 12px; letter-spacing: 1px; cursor: pointer; box-shadow: var(--accent-glow);">SAVE CONFIGURATION</button>
+                        <button onclick="resetSettings()" style="background: transparent; border: 1px solid var(--border-color); color: var(--text-secondary); padding: 12px 24px; border-radius: 8px; font-family: var(--font-display); font-size: 12px; letter-spacing: 1px; cursor: pointer;">RESET DEFAULT</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CONFIRMATION DIALOG MODAL -->
+    <div class="modal-overlay" id="confirmModal">
+        <div class="modal-card">
+            <div class="modal-title" id="modalTitle">Authorization Request</div>
+            <div class="modal-body" id="modalBody">Are you sure you want to run this command? Running unknown scripts can compromise security.</div>
+            <div class="modal-buttons">
+                <button class="modal-btn confirm" id="modalConfirmBtn">AUTHORIZE</button>
+                <button class="modal-btn cancel" onclick="closeModal()">CANCEL</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // API CONFIGURATION
+        const DEFAULT_API_KEY = ;
+        const DEFAULT_MODEL = "gemini-2.5-flash";
+
+        let GEMINI_API_KEY = localStorage.getItem("jarvis_api_key") || DEFAULT_API_KEY;
+        let GEMINI_MODEL = localStorage.getItem("jarvis_model") || DEFAULT_MODEL;
+
+        // Dynamically resolve Windows host server address for iOS/local network clients
+        const SERVER_URL = window.location.origin && window.location.origin.startsWith('http') 
+            ? window.location.origin 
+            : "http://localhost:9000";
+
+        // Mobile Sidebar Controls (iOS 18)
+        function toggleMobileMenu() {
+            const sidebar = document.querySelector('.sidebar');
+            const overlay = document.getElementById('mobileSidebarOverlay');
+            sidebar.classList.toggle('mobile-open');
+            overlay.classList.toggle('active');
+        }
+
+        // Tab Switching
+        function switchView(viewName) {
+            document.querySelectorAll('.view-pane').forEach(pane => pane.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+            
+            document.getElementById(viewName + 'View').classList.add('active');
+            
+            // Find button matches text
+            const btns = document.querySelectorAll('.nav-btn');
+            btns.forEach(btn => {
+                if (btn.innerText.toLowerCase().includes(viewName.toLowerCase()) || 
+                   (viewName === 'chat' && btn.innerText.includes('Jarvis'))) {
+                    btn.classList.add('active');
+                }
+            });
+
+            // Auto-close menu drawer when selecting a tab on mobile
+            const sidebar = document.querySelector('.sidebar');
+            const overlay = document.getElementById('mobileSidebarOverlay');
+            if (sidebar.classList.contains('mobile-open')) {
+                sidebar.classList.remove('mobile-open');
+                overlay.classList.remove('active');
+            }
+
+            // If switching to processes view, trigger refresh
+            if (viewName === 'processes') {
+                updateProcesses();
+            }
+        }
+
+        // --- DASHBOARD API LINK ---
+        async function fetchSystemStats() {
+            try {
+                const response = await fetch(`${SERVER_URL}/api/sysinfo`);
+                if (!response.ok) throw new Error("Server not responding");
+                const stats = await response.json();
+                
+                // Update Dashboard elements
+                document.getElementById('cpuVal').innerText = stats.CpuLoad;
+                document.getElementById('cpuBar').style.width = stats.CpuLoad + '%';
+                
+                document.getElementById('ramVal').innerText = stats.UsedRamGB.toFixed(1) + ' / ' + stats.TotalRamGB.toFixed(0);
+                document.getElementById('ramBar').style.width = stats.RamUsagePct + '%';
+                
+                const diskList = stats.Disks ? (Array.isArray(stats.Disks) ? stats.Disks : [stats.Disks]) : [];
+                if (diskList.length > 0) {
+                    const primaryDisk = diskList[0];
+                    document.getElementById('diskVal').innerText = primaryDisk.FreeGB.toFixed(0);
+                    document.getElementById('diskBar').style.width = primaryDisk.UsedPct + '%';
+                }
+
+                document.getElementById('compName').innerText = stats.ComputerName;
+                document.getElementById('osCaption').innerText = stats.OS;
+                document.getElementById('sysManufacturer').innerText = stats.Manufacturer;
+                document.getElementById('sysModel').innerText = stats.Model;
+                document.getElementById('ramDetail').innerText = `Total: ${stats.TotalRamGB} GB (Used: ${stats.UsedRamGB} GB, Free: ${stats.FreeRamGB} GB)`;
+                
+                document.getElementById('apiKeyStatus').innerText = "Jarvis Engine Connected";
+                document.getElementById('apiKeyStatus').style.color = "var(--green)";
+                document.getElementById('activeModelStatus').innerText = GEMINI_MODEL;
+            } catch (err) {
+                console.error("Sysinfo fetch error:", err);
+                document.getElementById('apiKeyStatus').innerText = "Local Host Server Offline";
+                document.getElementById('apiKeyStatus').style.color = "var(--red)";
+            }
+        }
+
+        // --- PROCESS MANAGEMENT ---
+        async function updateProcesses() {
+            const tbody = document.getElementById('processListBody');
+            try {
+                const response = await fetch(`${SERVER_URL}/api/processes`);
+                if (!response.ok) throw new Error("Failed to fetch processes");
+                const procs = await response.json();
+                
+                tbody.innerHTML = '';
+                
+                // Handle single process object or list
+                const procList = Array.isArray(procs) ? procs : [procs];
+
+                procList.forEach(proc => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${proc.Id}</td>
+                        <td style="color: var(--cyan);">${proc.Name}</td>
+                        <td>${proc.CPU ? proc.CPU : '0.00'}</td>
+                        <td>${proc.MemoryMB}</td>
+                        <td>
+                            <button class="kill-btn" onclick="promptKillProcess(${proc.Id}, '${proc.Name}')">TERMINATE</button>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            } catch (err) {
+                tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--red);">Error connecting to system backend. Run server.ps1 first!</td></tr>`;
+            }
+        }
+
+        // Prompt Kill Process Modal
+        let activeProcessToKill = null;
+        function promptKillProcess(pid, name) {
+            activeProcessToKill = pid;
+            showModal(
+                "Request Terminate Authorization",
+                `Are you sure you want to terminate process <b>${name}</b> (PID: ${pid})? Terminating system tasks can cause stability issues.`,
+                async () => {
+                    await executeKillProcess(pid);
+                }
+            );
+        }
+
+        async function executeKillProcess(pid) {
+            try {
+                const response = await fetch(`${SERVER_URL}/api/kill`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ pid: pid })
+                });
+                const result = await response.json();
+                if (result.status === "success") {
+                    appendTerminalLog(`stop-process -id ${pid} -force`, "success", `Process ${pid} killed successfully.`);
+                    updateProcesses();
+                } else {
+                    appendTerminalLog(`stop-process -id ${pid} -force`, "error", `Failed to kill process: ${result.message}`);
+                }
+            } catch (err) {
+                appendTerminalLog(`stop-process -id ${pid} -force`, "error", `Connection to system server failed.`);
+            }
+        }
+
+        // --- TERMINAL COMMAND EXECUTION ---
+        function handleTermKey(e) {
+            if (e.key === 'Enter') {
+                const cmd = document.getElementById('termInput').value.trim();
+                if (cmd) {
+                    executeCustomCommand(cmd);
+                    document.getElementById('termInput').value = '';
+                }
+            }
+        }
+
+        async function executeCustomCommand(commandText) {
+            appendTerminalLog(commandText, "pending", "Running command...");
+            try {
+                const response = await fetch(`${SERVER_URL}/api/exec`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ command: commandText })
+                });
+                const res = await response.json();
+                if (res.status === "success") {
+                    appendTerminalLog(commandText, "success", res.stdout, res.stderr);
+                } else {
+                    appendTerminalLog(commandText, "error", "", res.stderr || "Command failed");
+                }
+            } catch (err) {
+                appendTerminalLog(commandText, "error", "", "Failed to connect to local server backend. Make sure server.ps1 is running.");
+            }
+        }
+
+        function appendTerminalLog(command, status, stdout, stderr) {
+            const termLog = document.getElementById('termLog');
+            const entry = document.createElement('div');
+            entry.className = "term-entry";
+            
+            let stdoutHtml = stdout ? `<div class="term-stdout">${escapeHtml(stdout)}</div>` : '';
+            let stderrHtml = stderr ? `<div class="term-stderr">${escapeHtml(stderr)}</div>` : '';
+            
+            entry.innerHTML = `
+                <span class="term-prompt">PS C:\\Users\\VISAAGAN&gt; ${escapeHtml(command)}</span>
+                ${stdoutHtml}
+                ${stderrHtml}
+            `;
+            termLog.appendChild(entry);
+            termLog.scrollTop = termLog.scrollHeight;
+        }
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+        }
+
+        // --- CHAT WITH JARVIS ---
+        let chatHistory = [];
+        
+        function handleChatKey(e) {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        }
+
+        async function sendQuickMessage(text) {
+            document.getElementById('chatInput').value = text;
+            sendMessage();
+        }
+
+        async function sendMessage() {
+            const inputEl = document.getElementById('chatInput');
+            const messageText = inputEl.value.trim();
+            if (!messageText) return;
+
+            // Render user message
+            appendChatMessage("user", "Visaagan", messageText);
+            inputEl.value = '';
+
+            // Animate Jarvis Core
+            const reactor = document.getElementById('jarvisReactor');
+            reactor.classList.add('thinking');
+
+            // Format message for API history
+            chatHistory.push({
+                role: "user",
+                parts: [{ text: messageText }]
+            });
+
+            try {
+                // Fetch response from Gemini API directly (client-side)
+                const apiResponse = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${GEMINI_API_KEY}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: chatHistory,
+                        systemInstruction: {
+                            parts: [{
+                                text: "You are JARVIS, a highly advanced sci-fi artificial intelligence designed by Google DeepMind specifically for Visaagan. You run on Visaagan's laptop and have full access to local shell execution and diagnostics. \n" +
+                                      "Keep all responses relatively brief, structured, highly polite, and futuristic. Use emojis/badges like [SECURE LOG] or [SYSTEM STATUS]. \n\n" +
+                                      "SYSTEM COMMAND INSTRUCTION:\n" +
+                                      "If Visaagan asks you to run a script, list directories, check CPU, kill a process, or manage files, provide the exact PowerShell command wrapped inside a special code block: ```powershell-system\n<command-here>\n```. \n" +
+                                      "The UI will read this block and generate a clickable 'Run Command' button for him to authorize. NEVER use this code block for standard python examples or code explanations, ONLY when you want the local machine to execute it."
+                            }]
+                        }
+                    })
+                });
+
+                if (!apiResponse.ok) {
+                    throw new Error(`Gemini API Error: Status ${apiResponse.status}`);
+                }
+
+                const data = await apiResponse.json();
+                const jarvisReply = data.candidates[0].content.parts[0].text;
+
+                // Save reply to history
+                chatHistory.push({
+                    role: "model",
+                    parts: [{ text: jarvisReply }]
+                });
+
+                // Render Jarvis response
+                appendChatMessage("jarvis", "Jarvis Core", jarvisReply);
+                speakText(jarvisReply);
+            } catch (err) {
+                console.error("Gemini request failed:", err);
+                const errMsg = `[SYSTEM ERROR] Link to Gemini Cognitive Matrix disrupted. API Key authorization issue or connectivity loss. Details: ${err.message}`;
+                appendChatMessage("jarvis", "Jarvis Core", errMsg);
+                speakText("System error. Disrupted link to Gemini cognitive matrix.");
+            } finally {
+                reactor.classList.remove('thinking');
+            }
+        }
+
+        // Custom parser to format Jarvis responses
+        function appendChatMessage(sender, name, rawText) {
+            const feed = document.getElementById('chatFeed');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `chat-message ${sender}`;
+            
+            let formattedText = rawText;
+
+            // Handle system action blocks
+            const regex = /```powershell-system\n([\s\S]*?)```/g;
+            formattedText = formattedText.replace(regex, function(match, cmdText) {
+                const cleanedCmd = cmdText.trim();
+                return `
+                    <div class="system-action-block">
+                        <div class="action-header">
+                            <span class="action-badge">🔥 Local System Command Suggested</span>
+                        </div>
+                        <div class="action-cmd">${escapeHtml(cleanedCmd)}</div>
+                        <button class="action-btn" onclick="promptExecCommand('${escapeHtml(cleanedCmd).replace(/'/g, "\\'")}')">⚡ Run Command</button>
+                    </div>
+                `;
+            });
+
+            // Convert remaining standard code blocks
+            formattedText = formattedText.replace(/```(.*?)\n([\s\S]*?)```/g, function(match, lang, codeText) {
+                return `<pre><code>${escapeHtml(codeText.trim())}</code></pre>`;
+            });
+
+            // Convert simple inline code marks
+            formattedText = formattedText.replace(/`([^`]+)`/g, "<code>$1</code>");
+
+            // Convert double linebreaks to paragraphs
+            formattedText = formattedText.split('\n').join('<br>');
+
+            messageDiv.innerHTML = `
+                <h4>${name}</h4>
+                <div>${formattedText}</div>
+            `;
+
+            feed.appendChild(messageDiv);
+            feed.scrollTop = feed.scrollHeight;
+        }
+
+        // Exec from Suggested Chat Action
+        function promptExecCommand(commandText) {
+            showModal(
+                "Authorize Jarvis Command",
+                `Jarvis wants to execute the following script on your machine:<br><br><code style="display:block; padding:10px; background: rgba(0,0,0,0.4); border: 1px solid var(--border-color); color:var(--cyan); word-break:break-all;">${commandText}</code>`,
+                async () => {
+                    // Switch to terminal tab so user can see output
+                    switchView('terminal');
+                    await executeCustomCommand(commandText);
+                }
+            );
+        }
+
+        // --- MODAL UTILS ---
+        let currentModalAction = null;
+        function showModal(title, bodyText, actionCallback) {
+            document.getElementById('modalTitle').innerHTML = title;
+            document.getElementById('modalBody').innerHTML = bodyText;
+            document.getElementById('confirmModal').classList.add('active');
+            currentModalAction = actionCallback;
+        }
+
+        function closeModal() {
+            document.getElementById('confirmModal').classList.remove('active');
+            currentModalAction = null;
+        }
+
+        document.getElementById('modalConfirmBtn').addEventListener('click', async () => {
+            if (currentModalAction) {
+                await currentModalAction();
+            }
+            closeModal();
+        });
+
+        // --- VOICE AND AUDIO INTERFACES ---
+        let isMuted = false;
+        
+        function toggleMute() {
+            isMuted = !isMuted;
+            const btn = document.getElementById('muteBtn');
+            const icon = document.getElementById('speakerIcon');
+            if (isMuted) {
+                btn.style.color = "var(--red)";
+                btn.style.borderColor = "var(--red)";
+                btn.querySelector('span').innerText = "VOICE: OFF";
+                icon.innerHTML = `
+                    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
+                `;
+                // Stop any speaking
+                window.speechSynthesis.cancel();
+            } else {
+                btn.style.color = "var(--cyan)";
+                btn.style.borderColor = "var(--border-color)";
+                btn.querySelector('span').innerText = "VOICE: ON";
+                icon.innerHTML = `
+                    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
+                    <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/>
+                `;
+            }
+        }
+
+        function speakText(text) {
+            if (isMuted) return;
+
+            // Strip out markdown code blocks and HTML tags to prevent reading code syntax
+            let cleanText = text.replace(/```[\s\S]*?```/g, ""); // Strip code blocks
+            cleanText = cleanText.replace(/`([^`]+)`/g, "$1");   // Strip inline code backticks
+            cleanText = cleanText.replace(/<\/?[^>]+(>|$)/g, ""); // Strip HTML tags
+            cleanText = cleanText.trim();
+            
+            if (!cleanText) return;
+
+            // Cancel any active speak queue to play this immediately
+            window.speechSynthesis.cancel();
+
+            const utterance = new SpeechSynthesisUtterance(cleanText);
+            
+            // Choose a suitable voice (prefer premium English male or system default)
+            const voices = window.speechSynthesis.getVoices();
+            const preferredVoice = voices.find(v => v.name.includes("Google UK English Male") || v.name.includes("Microsoft David") || v.lang.startsWith("en-GB"));
+            if (preferredVoice) {
+                utterance.voice = preferredVoice;
+            }
+            
+            utterance.rate = 1.05; // Slightly faster for a smart feel
+            utterance.pitch = 0.95; // Slightly deeper for a solid assistant voice
+            
+            window.speechSynthesis.speak(utterance);
+        }
+
+        let recognition = null;
+        let isListening = false;
+
+        function initSpeechRecognition() {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (!SpeechRecognition) {
+                console.warn("Speech recognition is not supported in this browser.");
+                document.getElementById('voiceBtn').style.display = 'none';
+                return;
+            }
+
+            recognition = new SpeechRecognition();
+            recognition.continuous = false;
+            recognition.interimResults = false;
+            recognition.lang = 'en-US';
+
+            recognition.onstart = () => {
+                isListening = true;
+                const voiceBtn = document.getElementById('voiceBtn');
+                voiceBtn.style.color = "var(--red)";
+                voiceBtn.style.filter = "drop-shadow(0 0 5px var(--red))";
+                document.getElementById('jarvisReactor').classList.add('thinking');
+                document.getElementById('chatInput').placeholder = "Listening to vocal inputs...";
+            };
+
+            recognition.onresult = (event) => {
+                const transcript = event.results[0][0].transcript;
+                document.getElementById('chatInput').value = transcript;
+            };
+
+            recognition.onerror = (event) => {
+                console.error("Speech recognition error:", event.error);
+                stopListeningState();
+                
+                let errorMsg = "Microphone or Speech Recognition Error.";
+                if (event.error === 'not-allowed') {
+                    errorMsg = "Microphone access was denied. Please click the permissions icon in the browser address bar to allow microphone access, or open the dashboard in a standard browser tab (http://localhost:9000) if the Edge app frame blocks permission prompts.";
+                } else if (event.error === 'service-not-allowed') {
+                    errorMsg = "Speech recognition service is not allowed/supported by your current system configuration.";
+                } else if (event.error === 'network') {
+                    errorMsg = "A network error occurred. Please ensure you are connected to the internet as Edge's Speech API requires online processing.";
+                } else if (event.error === 'no-speech') {
+                    return;
+                }
+                
+                appendChatMessage("jarvis", "Jarvis Core", `[SYSTEM ERROR] ${errorMsg}`);
+                speakText("Microphone access is unavailable. Please verify system permissions.");
+            };
+
+            recognition.onend = () => {
+                stopListeningState();
+                
+                // Auto-transmit recognized speech
+                const inputVal = document.getElementById('chatInput').value.trim();
+                if (inputVal) {
+                    sendMessage();
+                }
+            };
+        }
+
+        function stopListeningState() {
+            isListening = false;
+            const voiceBtn = document.getElementById('voiceBtn');
+            voiceBtn.style.color = "var(--cyan)";
+            voiceBtn.style.filter = "none";
+            document.getElementById('jarvisReactor').classList.remove('thinking');
+            document.getElementById('chatInput').placeholder = "Awaiting vocal inputs or terminal commands...";
+        }
+
+        function toggleVoice() {
+            if (!recognition) {
+                initSpeechRecognition();
+            }
+            if (!recognition) return;
+
+            if (isListening) {
+                recognition.stop();
+            } else {
+                document.getElementById('chatInput').value = '';
+                recognition.start();
+            }
+        }
+
+        // --- FILE UPLOAD FUNCTIONALITY ---
+        async function uploadFile() {
+            const fileInput = document.createElement('input');
+            fileInput.type = 'file';
+            fileInput.onchange = async () => {
+                const file = fileInput.files[0];
+                if (!file) return;
+
+                // Render uploading status
+                appendChatMessage("user", "Visaagan", `[UPLOADING FILE] Uploading <b>${escapeHtml(file.name)}</b> (${(file.size / 1024).toFixed(1)} KB)...`);
+                
+                // Animate core
+                const reactor = document.getElementById('jarvisReactor');
+                reactor.classList.add('thinking');
+
+                try {
+                    const arrayBuffer = await file.arrayBuffer();
+                    const response = await fetch(`${SERVER_URL}/api/upload?filename=${encodeURIComponent(file.name)}`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/octet-stream'
+                        },
+                        body: arrayBuffer
+                    });
+
+                    if (!response.ok) {
+                        const errData = await response.json();
+                        throw new Error(errData.message || `Server status ${response.status}`);
+                    }
+
+                    const result = await response.json();
+                    if (result.status === "success") {
+                        appendChatMessage("jarvis", "Jarvis Core", `[UPLOAD SUCCESS] File saved to local repository:<br>📁 <code>${escapeHtml(result.path)}</code>`);
+                        speakText("File uploaded successfully.");
+                    } else {
+                        appendChatMessage("jarvis", "Jarvis Core", `[SYSTEM ERROR] Upload failed: ${escapeHtml(result.message)}`);
+                        speakText("Upload failed.");
+                    }
+                } catch (err) {
+                    console.error("Upload error:", err);
+                    appendChatMessage("jarvis", "Jarvis Core", `[SYSTEM ERROR] Upload failed: ${escapeHtml(err.message)}`);
+                    speakText("Upload error.");
+                } finally {
+                    reactor.classList.remove('thinking');
+                }
+            };
+            fileInput.click();
+        }
+
+        // --- SETTINGS CONTROLS ---
+        function loadSettingsToUI() {
+            document.getElementById('settingsApiKey').value = localStorage.getItem("jarvis_api_key") || "";
+            document.getElementById('settingsModel').value = GEMINI_MODEL;
+        }
+
+        function toggleApiKeyVisibility() {
+            const apiInput = document.getElementById('settingsApiKey');
+            if (apiInput.type === "password") {
+                apiInput.type = "text";
+            } else {
+                apiInput.type = "password";
+            }
+        }
+
+        function saveSettings() {
+            const apiVal = document.getElementById('settingsApiKey').value.trim();
+            const modelVal = document.getElementById('settingsModel').value;
+
+            if (apiVal) {
+                localStorage.setItem("jarvis_api_key", apiVal);
+                GEMINI_API_KEY = apiVal;
+            } else {
+                localStorage.removeItem("jarvis_api_key");
+                GEMINI_API_KEY = DEFAULT_API_KEY;
+            }
+
+            localStorage.setItem("jarvis_model", modelVal);
+            GEMINI_MODEL = modelVal;
+
+            showModal("System Reconfigured", `API Configuration applied successfully.<br><br>Model: <b>${GEMINI_MODEL}</b><br>API Key: <b>${apiVal ? "User Custom Key" : "Default Built-In Key"}</b>`, () => {
+                fetchSystemStats();
+            });
+        }
+
+        function resetSettings() {
+            localStorage.removeItem("jarvis_api_key");
+            localStorage.removeItem("jarvis_model");
+            
+            GEMINI_API_KEY = DEFAULT_API_KEY;
+            GEMINI_MODEL = DEFAULT_MODEL;
+
+            document.getElementById('settingsApiKey').value = "";
+            document.getElementById('settingsModel').value = DEFAULT_MODEL;
+
+            showModal("System Reset", "All API settings have been restored to their defaults.", () => {
+                fetchSystemStats();
+            });
+        }
+
+        // Initialize Page
+        window.addEventListener('load', () => {
+            loadSettingsToUI();
+            fetchSystemStats();
+            initSpeechRecognition();
+            // Start polling system specs every 4 seconds
+            setInterval(fetchSystemStats, 4000);
+
+            // Optional: trigger voices loading
+            if (typeof speechSynthesis !== 'undefined' && speechSynthesis.onvoiceschanged !== undefined) {
+                speechSynthesis.onvoiceschanged = () => {};
+            }
+
+            // Speak greeting on startup
+            setTimeout(() => {
+                speakText("Jarvis systems online. Telemetry channels fully operational.");
+            }, 1000);
+        });
+    </script>
+</body>
+</html>
