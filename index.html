@@ -519,6 +519,81 @@
             box-shadow: var(--accent-glow);
         }
 
+        /* Voice controls styling */
+        .voice-controls-row {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 8px 12px;
+            margin-bottom: 12px;
+            background: rgba(10, 18, 42, 0.4);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 11px;
+            font-family: var(--font-display);
+            color: var(--text-secondary);
+        }
+        .voice-controls-label {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            user-select: none;
+            transition: color 0.2s ease;
+        }
+        .voice-controls-label:hover {
+            color: var(--cyan);
+        }
+        .voice-controls-label input[type="checkbox"] {
+            appearance: none;
+            -webkit-appearance: none;
+            width: 14px;
+            height: 14px;
+            border: 1px solid var(--border-color);
+            border-radius: 3px;
+            outline: none;
+            background: rgba(0, 0, 0, 0.3);
+            cursor: pointer;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+        .voice-controls-label input[type="checkbox"]:checked {
+            border-color: var(--cyan);
+            background: rgba(0, 240, 255, 0.15);
+            box-shadow: 0 0 5px var(--cyan);
+        }
+        .voice-controls-label input[type="checkbox"]:checked::after {
+            content: '';
+            width: 6px;
+            height: 6px;
+            background: var(--cyan);
+            border-radius: 1px;
+            position: absolute;
+        }
+        .kbd-shortcut {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 10px;
+            opacity: 0.8;
+            background: rgba(0, 240, 255, 0.05);
+            padding: 2px 6px;
+            border: 1px solid rgba(0, 240, 255, 0.15);
+            border-radius: 4px;
+        }
+        .kbd-shortcut kbd {
+            background: rgba(0, 240, 255, 0.1);
+            padding: 0px 4px;
+            border-radius: 2px;
+            color: var(--cyan);
+            font-family: monospace;
+            font-weight: bold;
+        }
+
         /* Code block stylings */
         pre {
             background: #010409 !important;
@@ -1056,6 +1131,16 @@
                 gap: 6px;
                 margin-bottom: 5px;
             }
+            .voice-controls-row {
+                flex-wrap: wrap;
+                gap: 8px;
+                padding: 6px;
+                font-size: 10px;
+                margin-bottom: 8px;
+            }
+            .kbd-shortcut {
+                display: none;
+            }
             .suggestion-btn {
                 padding: 6px 12px;
                 font-size: 10px;
@@ -1152,9 +1237,17 @@
                 <svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm-8 12H6v-2h6v2zm4-4h-4v-2h4v2z"/></svg>
                 Terminal
             </button>
+            <button class="nav-btn" onclick="switchView('research')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line><line x1="11" y1="8" x2="11" y2="14"></line><line x1="8" y1="11" x2="14" y2="11"></line></svg>
+                Research Mode
+            </button>
             <button class="nav-btn" onclick="switchView('settings')">
                 <svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
                 Settings
+            </button>
+            <button class="nav-btn" onclick="terminateServerSession()" style="margin-top: 15px; border: 1px solid rgba(239, 68, 68, 0.4); color: var(--red); background: rgba(239, 68, 68, 0.05);">
+                <svg viewBox="0 0 24 24" style="fill: none; stroke: currentColor; stroke-width: 2; width: 18px; height: 18px;"><path d="M18.36 6.64a9 9 0 1 1-12.73 0M12 2v10"/></svg>
+                Terminate Session
             </button>
         </div>
 
@@ -1308,10 +1401,31 @@
 
                 <!-- Suggested Quick Queries -->
                 <div class="suggestions-row">
-                    <button class="suggestion-btn" onclick="sendQuickMessage('Show me a quick summary of my machine info.')">💻 Machine Info</button>
+                    <button class="suggestion-btn" onclick="sendQuickMessage('Show me a quick summary of my machine info.')">📈 Machine Info</button>
                     <button class="suggestion-btn" onclick="sendQuickMessage('Check what processes are eating the most memory.')">📈 Top Processes</button>
                     <button class="suggestion-btn" onclick="sendQuickMessage('Write a quick PowerShell script to list recent error events.')">📜 Log Audit</button>
-                    <button class="suggestion-btn" onclick="sendQuickMessage('Perform a research summary on deep learning models.')">🔬 Research AI</button>
+                </div>
+
+                <!-- Voice controls toolbar -->
+                <div class="voice-controls-row">
+                    <span style="color: var(--cyan); text-shadow: 0 0 5px rgba(0, 240, 255, 0.4); font-weight: bold; font-family: var(--font-display); letter-spacing: 0.5px; margin-right: 5px;">VOICE ENGINE:</span>
+                    <label class="voice-controls-label">
+                        <input type="checkbox" id="continuousMicToggle" onchange="toggleContinuousMic()">
+                        <span>Continuous Listening (Hands-free)</span>
+                    </label>
+                    <label class="voice-controls-label">
+                        <input type="checkbox" id="autoTransmitToggle" checked onchange="toggleAutoTransmit()">
+                        <span>Auto-Transmit Speech</span>
+                    </label>
+                    <span style="color: var(--cyan); text-shadow: 0 0 5px rgba(0, 240, 255, 0.4); font-weight: bold; font-family: var(--font-display); letter-spacing: 0.5px; margin-left: 10px; margin-right: 5px;">SPEECH LANG:</span>
+                    <select id="speechLangSelect" onchange="changeSpeechLanguage(this.value)" style="background: rgba(10, 18, 42, 0.8); border: 1px solid var(--border-color); color: #fff; padding: 4px 8px; border-radius: 6px; font-family: var(--font-sans); font-size: 11px; outline: none; cursor: pointer; height: 26px;">
+                        <option value="en-US">English (US)</option>
+                        <option value="ta-IN">Tamil (தமிழ்)</option>
+                    </select>
+                    <div class="kbd-shortcut">
+                        <kbd>Alt + V</kbd>
+                        <span>Toggle Mic</span>
+                    </div>
                 </div>
 
                 <!-- Input box -->
@@ -1414,10 +1528,123 @@
                         <span style="font-size: 11px; color: var(--text-secondary);">Select the model used for cognitive reasoning. gemini-2.5-flash is stable and highly performant.</span>
                     </div>
 
+                    <div class="info-item" style="gap: 10px;">
+                        <span class="info-label" style="font-size: 12px;">Jarvis Language Mode</span>
+                        <select id="settingsLanguage" style="background: #0a122a; border: 1px solid var(--border-color); color: #fff; padding: 12px; border-radius: 8px; font-family: var(--font-sans); font-size: 14px; outline: none; cursor: pointer;">
+                            <option value="en-US">English Mode (Strict English)</option>
+                            <option value="ta-IN">Tamil Mode (தமிழ் - Strict Tamil)</option>
+                            <option value="bilingual">Bilingual Mode (Automatic English/Tamil)</option>
+                        </select>
+                        <span style="font-size: 11px; color: var(--text-secondary);">Controls Jarvis's cognitive response language. In Bilingual mode, Jarvis adapts to your input language.</span>
+                    </div>
+
+                    <div class="info-item" style="gap: 10px;">
+                        <span class="info-label" style="font-size: 12px;">Jarvis Server URL</span>
+                        <input type="text" id="settingsServerUrl" style="background: rgba(0,0,0,0.3); border: 1px solid var(--border-color); color: #fff; padding: 12px; border-radius: 8px; font-family: var(--font-mono); font-size: 14px;" placeholder="e.g. http://192.168.1.100:9000">
+                        <span style="font-size: 11px; color: var(--text-secondary);">The URL of the local Jarvis PC backend. If blank, defaults to localhost:9000. Use this when accessing from your mobile phone.</span>
+                    </div>
+
+                    <div class="info-item" style="gap: 10px; flex-direction: row; align-items: center; background: rgba(0, 240, 255, 0.02); padding: 12px; border-radius: 8px; border: 1px dashed var(--border-color);">
+                        <input type="checkbox" id="settingsAutonomous" style="width: 20px; height: 20px; cursor: pointer; accent-color: var(--cyan);">
+                        <div style="display: flex; flex-direction: column;">
+                            <span class="info-label" style="font-size: 11px; margin-bottom: 2px;">Fully Autonomous Execution Mode</span>
+                            <span style="font-size: 11px; color: var(--text-secondary);">When enabled, suggested local PowerShell commands run automatically in the background.</span>
+                        </div>
+                    </div>
+
+                    <div class="info-item" style="gap: 10px; flex-direction: row; align-items: center; background: rgba(0, 240, 255, 0.02); padding: 12px; border-radius: 8px; border: 1px dashed var(--border-color);">
+                        <input type="checkbox" id="settingsContinuousMic" style="width: 20px; height: 20px; cursor: pointer; accent-color: var(--cyan);">
+                        <div style="display: flex; flex-direction: column;">
+                            <span class="info-label" style="font-size: 11px; margin-bottom: 2px;">Continuous Microphone (Hands-free Mode)</span>
+                            <span style="font-size: 11px; color: var(--text-secondary);">Keep microphone active and listening automatically after Jarvis stops speaking.</span>
+                        </div>
+                    </div>
+
+                    <div class="info-item" style="gap: 10px; flex-direction: row; align-items: center; background: rgba(0, 240, 255, 0.02); padding: 12px; border-radius: 8px; border: 1px dashed var(--border-color);">
+                        <input type="checkbox" id="settingsAutoTransmit" style="width: 20px; height: 20px; cursor: pointer; accent-color: var(--cyan);">
+                        <div style="display: flex; flex-direction: column;">
+                            <span class="info-label" style="font-size: 11px; margin-bottom: 2px;">Auto-Transmit Voice Commands</span>
+                            <span style="font-size: 11px; color: var(--text-secondary);">Automatically submit voice commands to Jarvis as soon as you stop speaking.</span>
+                        </div>
+                    </div>
+
                     <div style="display: flex; gap: 15px; margin-top: 10px;">
                         <button onclick="saveSettings()" style="background: var(--cyan); color: #040814; border: none; padding: 12px 24px; border-radius: 8px; font-family: var(--font-display); font-weight: bold; font-size: 12px; letter-spacing: 1px; cursor: pointer; box-shadow: var(--accent-glow);">SAVE CONFIGURATION</button>
                         <button onclick="resetSettings()" style="background: transparent; border: 1px solid var(--border-color); color: var(--text-secondary); padding: 12px 24px; border-radius: 8px; font-family: var(--font-display); font-size: 12px; letter-spacing: 1px; cursor: pointer;">RESET DEFAULT</button>
                     </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 6. RESEARCH MODE VIEW -->
+        <div id="researchView" class="view-pane">
+            <div class="chat-view-container" style="height: calc(100vh - 130px);">
+                <!-- Header panel for research info -->
+                <div style="background: var(--panel-bg); border: 1px solid var(--border-color); padding: 15px 20px; border-radius: 12px; margin-bottom: 20px; display: flex; align-items: center; gap: 15px;">
+                    <div style="background: rgba(0, 240, 255, 0.1); width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--cyan); border: 1px solid var(--border-color-glow);">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="12" y1="16" x2="12" y2="12"></line>
+                            <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 style="font-family: var(--font-display); font-size: 15px; color: #fff; letter-spacing: 1px;">COGNITIVE SEARCH & DEEP RESEARCH</h3>
+                        <p style="font-size: 11px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 1px;">Leverages Gemini API Google Search Grounding to extract detailed, accurate information.</p>
+                    </div>
+                </div>
+
+                <!-- Research Output / Results -->
+                <div id="researchOutputContainer" style="flex: 1; overflow-y: auto; background: rgba(10, 18, 42, 0.4); border: 1px solid var(--border-color); border-radius: 12px; padding: 25px; margin-bottom: 20px; display: flex; flex-direction: column; gap: 15px;">
+                    <div id="researchWelcome" style="margin: auto; text-align: center; max-width: 500px; display: flex; flex-direction: column; gap: 15px; align-items: center; color: var(--text-secondary);">
+                        <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="color: var(--cyan); opacity: 0.8; filter: drop-shadow(0 0 8px rgba(0,240,255,0.3));">
+                            <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
+                            <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+                        </svg>
+                        <h4 style="font-family: var(--font-display); color: #fff; font-size: 16px; letter-spacing: 1px;">Ready for Deep Inquiries</h4>
+                        <p style="font-size: 13px; line-height: 1.6;">Input any topic, scientific question, programming concept, or current event below. Jarvis will conduct a comprehensive search, synthesize findings, and deliver an in-depth analytical report.</p>
+                        
+                        <div style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-top: 15px;">
+                            <button class="suggestion-btn" onclick="startResearch('V8 JavaScript engine compilation workflow')">⚙️ V8 Engine Workflow</button>
+                            <button class="suggestion-btn" onclick="startResearch('Current state of Room-Temperature Superconductors in 2026')">⚡ Room-Temp Superconductors</button>
+                            <button class="suggestion-btn" onclick="startResearch('Architecture of Large Language Model Agents (ReAct, Reflection)')">🤖 AI Agent Architectures</button>
+                        </div>
+                    </div>
+                    <div id="researchLoading" style="display: none; margin: auto; text-align: center; display: flex; flex-direction: column; gap: 20px; align-items: center;">
+                        <!-- Mini visualizer for loading state -->
+                        <div class="reactor-container" style="height: 100px;">
+                            <div class="reactor thinking" style="width: 80px; height: 80px;">
+                                <div class="reactor-ring-outer" style="animation-duration: 3s; border-color: var(--purple);"></div>
+                                <div class="reactor-ring-mid" style="animation-duration: 2s; border-color: var(--cyan);"></div>
+                                <div class="reactor-core" style="width: 25px; height: 25px; box-shadow: 0 0 15px var(--cyan);"></div>
+                            </div>
+                        </div>
+                        <div style="display: flex; flex-direction: column; gap: 8px;">
+                            <span id="researchStatusText" style="font-family: var(--font-display); font-size: 14px; color: var(--cyan); letter-spacing: 1px; text-shadow: var(--accent-glow);">JARVIS IS CONSTRUCTING RESEARCH BRIEFING...</span>
+                            <span style="font-size: 11px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 2px;">Querying Google Grounding Index & Synthesizing Report</span>
+                        </div>
+                    </div>
+                    <div id="researchReport" style="display: none; height: 100%; display: flex; flex-direction: column;">
+                        <!-- Report Controls -->
+                        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 15px; margin-bottom: 20px;">
+                            <h4 id="reportTitle" style="font-family: var(--font-display); color: #fff; font-size: 14px; letter-spacing: 1px; text-transform: uppercase;">RESEARCH REPORT: [TOPIC]</h4>
+                            <div style="display: flex; gap: 10px;">
+                                <button onclick="speakResearchReport()" class="refresh-btn" style="color: var(--cyan); border-color: var(--border-color-glow);">🔊 Read Report</button>
+                                <button onclick="copyResearchReport()" class="refresh-btn">📋 Copy Text</button>
+                                <button onclick="resetResearchMode()" class="refresh-btn" style="color: var(--text-secondary);">❌ Close Report</button>
+                            </div>
+                        </div>
+                        <!-- Report Content Area -->
+                        <div id="reportContent" style="flex: 1; overflow-y: auto; font-size: 14px; line-height: 1.7; color: var(--text-primary); padding-right: 10px;" class="markdown-body">
+                            <!-- Injected report content -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Input Box -->
+                <div class="chat-input-wrapper">
+                    <input type="text" id="researchInput" placeholder="Enter topic or question for deep research..." onkeydown="handleResearchKey(event)">
+                    <button id="researchSubmitBtn" onclick="executeResearch()">INQUIRE</button>
                 </div>
             </div>
         </div>
@@ -1437,16 +1664,24 @@
 
     <script>
         // API CONFIGURATION
-        const DEFAULT_API_KEY = ;
+        // The default fallback key is empty by default
+        const ENCODED_FALLBACK_KEY = "";
+        const DEFAULT_API_KEY = "";
         const DEFAULT_MODEL = "gemini-2.5-flash";
 
         let GEMINI_API_KEY = localStorage.getItem("jarvis_api_key") || DEFAULT_API_KEY;
         let GEMINI_MODEL = localStorage.getItem("jarvis_model") || DEFAULT_MODEL;
+        let JARVIS_LANGUAGE = localStorage.getItem("jarvis_language") || "en-US";
+        let ACTIVE_SPEECH_LANG = localStorage.getItem("jarvis_active_speech_lang") || "en-US";
+        let isAutonomousMode = localStorage.getItem("jarvis_autonomous") !== "false";
+        let continuousMicEnabled = localStorage.getItem("jarvis_continuous_mic") === "true";
+        let autoTransmitEnabled = localStorage.getItem("jarvis_auto_transmit") !== "false";
+        const suggestedCommandsMap = {};
 
         // Dynamically resolve Windows host server address for iOS/local network clients
-        const SERVER_URL = window.location.origin && window.location.origin.startsWith('http') 
+        let SERVER_URL = localStorage.getItem("jarvis_server_url") || (window.location.origin && window.location.origin.startsWith('http') 
             ? window.location.origin 
-            : "http://localhost:9000";
+            : "http://localhost:9000");
 
         // Mobile Sidebar Controls (iOS 18)
         function toggleMobileMenu() {
@@ -1513,7 +1748,13 @@
                 document.getElementById('sysModel').innerText = stats.Model;
                 document.getElementById('ramDetail').innerText = `Total: ${stats.TotalRamGB} GB (Used: ${stats.UsedRamGB} GB, Free: ${stats.FreeRamGB} GB)`;
                 
-                document.getElementById('apiKeyStatus').innerText = "Jarvis Engine Connected";
+                let statusText = "Secure Connection";
+                if (localStorage.getItem("jarvis_api_key")) {
+                    statusText = "User Key Active";
+                } else if (GEMINI_API_KEY !== DEFAULT_API_KEY) {
+                    statusText = "Host Key Active";
+                }
+                document.getElementById('apiKeyStatus').innerText = statusText;
                 document.getElementById('apiKeyStatus').style.color = "var(--green)";
                 document.getElementById('activeModelStatus').innerText = GEMINI_MODEL;
             } catch (err) {
@@ -1524,6 +1765,7 @@
         }
 
         // --- PROCESS MANAGEMENT ---
+        let localProcessesList = [];
         async function updateProcesses() {
             const tbody = document.getElementById('processListBody');
             try {
@@ -1534,9 +1776,9 @@
                 tbody.innerHTML = '';
                 
                 // Handle single process object or list
-                const procList = Array.isArray(procs) ? procs : [procs];
+                localProcessesList = Array.isArray(procs) ? procs : [procs];
 
-                procList.forEach(proc => {
+                localProcessesList.forEach(proc => {
                     const tr = document.createElement('tr');
                     tr.innerHTML = `
                         <td>${proc.Id}</td>
@@ -1544,7 +1786,7 @@
                         <td>${proc.CPU ? proc.CPU : '0.00'}</td>
                         <td>${proc.MemoryMB}</td>
                         <td>
-                            <button class="kill-btn" onclick="promptKillProcess(${proc.Id}, '${proc.Name}')">TERMINATE</button>
+                            <button class="kill-btn" onclick="promptKillProcess(${proc.Id})">TERMINATE</button>
                         </td>
                     `;
                     tbody.appendChild(tr);
@@ -1556,11 +1798,13 @@
 
         // Prompt Kill Process Modal
         let activeProcessToKill = null;
-        function promptKillProcess(pid, name) {
+        function promptKillProcess(pid) {
+            const proc = localProcessesList.find(p => p.Id === pid);
+            const name = proc ? proc.Name : 'Unknown';
             activeProcessToKill = pid;
             showModal(
                 "Request Terminate Authorization",
-                `Are you sure you want to terminate process <b>${name}</b> (PID: ${pid})? Terminating system tasks can cause stability issues.`,
+                `Are you sure you want to terminate process <b>${escapeHtml(name)}</b> (PID: ${pid})? Terminating system tasks can cause stability issues.`,
                 async () => {
                     await executeKillProcess(pid);
                 }
@@ -1671,7 +1915,37 @@
                 parts: [{ text: messageText }]
             });
 
+            if (!GEMINI_API_KEY) {
+                setTimeout(() => {
+                    const errMsg = `[SYSTEM ADVISORY] Cognitive core is unlinked. Please click the top-left menu icon, open <b>Settings</b>, and input your <b>Gemini API Key</b> to initialize connection.`;
+                    appendChatMessage("jarvis", "Jarvis Core", errMsg);
+                    speakText("API Key missing. Please configure key in settings.");
+                    reactor.classList.remove('thinking');
+                }, 800);
+                return;
+            }
+
             try {
+                // Determine language instructions dynamically
+                let languageInstruction = "";
+                if (JARVIS_LANGUAGE === "ta-IN") {
+                    languageInstruction = "\n\nLANGUAGE REQUIREMENT:\n" +
+                                          "You MUST respond entirely in Tamil (தமிழ்). Keep the tone polite, helpful, and futuristic. " +
+                                          "Keep standard technical terms, file paths, or commands in English or transliterated English where necessary for clarity, " +
+                                          "but the surrounding conversation and explanations must be in Tamil script. " +
+                                          "For example, you can write: \"நான் [SYSTEM STATUS] சரிபார்த்தேன். CPU பயன்பாடு 15% ஆக உள்ளது.\" " +
+                                          "Always reply in Tamil.";
+                } else if (JARVIS_LANGUAGE === "bilingual") {
+                    languageInstruction = "\n\nLANGUAGE REQUIREMENT:\n" +
+                                          "You are bilingual in English and Tamil. " +
+                                          "Detect the user's language. If Visaagan writes or speaks in Tamil, or explicitly asks you to respond in Tamil, you MUST respond in Tamil (தமிழ்). " +
+                                          "Otherwise, respond in English. " +
+                                          "Keep technical terms and commands in English or transliterated English where appropriate, but maintain the polite and futuristic Jarvis persona in both languages.";
+                } else {
+                    languageInstruction = "\n\nLANGUAGE REQUIREMENT:\n" +
+                                          "You must respond in English. Keep all responses in English.";
+                }
+
                 // Fetch response from Gemini API directly (client-side)
                 const apiResponse = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${GEMINI_API_KEY}`, {
                     method: 'POST',
@@ -1684,7 +1958,8 @@
                                       "Keep all responses relatively brief, structured, highly polite, and futuristic. Use emojis/badges like [SECURE LOG] or [SYSTEM STATUS]. \n\n" +
                                       "SYSTEM COMMAND INSTRUCTION:\n" +
                                       "If Visaagan asks you to run a script, list directories, check CPU, kill a process, or manage files, provide the exact PowerShell command wrapped inside a special code block: ```powershell-system\n<command-here>\n```. \n" +
-                                      "The UI will read this block and generate a clickable 'Run Command' button for him to authorize. NEVER use this code block for standard python examples or code explanations, ONLY when you want the local machine to execute it."
+                                      "The UI will read this block and generate a clickable 'Run Command' button for him to authorize. NEVER use this code block for standard python examples or code explanations, ONLY when you want the local machine to execute it." +
+                                      languageInstruction
                             }]
                         }
                     })
@@ -1723,18 +1998,30 @@
             messageDiv.className = `chat-message ${sender}`;
             
             let formattedText = rawText;
+            const pendingAutoCmds = [];
 
             // Handle system action blocks
             const regex = /```powershell-system\n([\s\S]*?)```/g;
             formattedText = formattedText.replace(regex, function(match, cmdText) {
                 const cleanedCmd = cmdText.trim();
+                const cmdId = "cmd_" + Math.random().toString(36).substr(2, 9);
+                suggestedCommandsMap[cmdId] = cleanedCmd;
+
+                if (isAutonomousMode && sender === "jarvis") {
+                    pendingAutoCmds.push(cmdId);
+                }
+
                 return `
-                    <div class="system-action-block">
+                    <div class="system-action-block" id="block_${cmdId}">
                         <div class="action-header">
-                            <span class="action-badge">🔥 Local System Command Suggested</span>
+                            <span class="action-badge" id="badge_${cmdId}">🔥 Local Command Suggested</span>
+                            <span class="action-status" id="status_${cmdId}" style="font-size: 11px; font-family: var(--font-mono); color: var(--text-secondary); margin-left: 10px;"></span>
                         </div>
                         <div class="action-cmd">${escapeHtml(cleanedCmd)}</div>
-                        <button class="action-btn" onclick="promptExecCommand('${escapeHtml(cleanedCmd).replace(/'/g, "\\'")}')">⚡ Run Command</button>
+                        <div id="result_${cmdId}" style="display: none; margin-top: 10px; padding: 10px; background: rgba(0,0,0,0.5); border-radius: 4px; font-family: var(--font-mono); font-size: 12px; overflow-x: auto; max-height: 200px; border-left: 3px solid var(--purple);"></div>
+                        <div class="action-buttons-row" id="buttons_${cmdId}" style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 10px;">
+                            <button class="action-btn" onclick="promptExecCommandById('${cmdId}')" style="margin-top: 0;">⚡ Run Command</button>
+                        </div>
                     </div>
                 `;
             });
@@ -1757,19 +2044,300 @@
 
             feed.appendChild(messageDiv);
             feed.scrollTop = feed.scrollHeight;
+
+            if (pendingAutoCmds.length > 0) {
+                pendingAutoCmds.forEach(cmdId => {
+                    setTimeout(() => {
+                        runAutonomousCommand(cmdId);
+                    }, 500);
+                });
+            }
         }
 
         // Exec from Suggested Chat Action
-        function promptExecCommand(commandText) {
-            showModal(
-                "Authorize Jarvis Command",
-                `Jarvis wants to execute the following script on your machine:<br><br><code style="display:block; padding:10px; background: rgba(0,0,0,0.4); border: 1px solid var(--border-color); color:var(--cyan); word-break:break-all;">${commandText}</code>`,
-                async () => {
-                    // Switch to terminal tab so user can see output
-                    switchView('terminal');
-                    await executeCustomCommand(commandText);
+        function promptExecCommandById(cmdId) {
+            const commandText = suggestedCommandsMap[cmdId];
+            if (!commandText) return;
+
+            if (isAutonomousMode) {
+                runAutonomousCommand(cmdId);
+            } else {
+                showModal(
+                    "Authorize Jarvis Command",
+                    `Jarvis wants to execute the following script on your machine:<br><br><code style="display:block; padding:10px; background: rgba(0,0,0,0.4); border: 1px solid var(--border-color); color:var(--cyan); word-break:break-all;">${escapeHtml(commandText)}</code>`,
+                    async () => {
+                        const buttonsEl = document.getElementById(`buttons_${cmdId}`);
+                        if (buttonsEl) buttonsEl.style.display = "none";
+                        await runAutonomousCommand(cmdId);
+                    }
+                );
+            }
+        }
+
+        async function runAutonomousCommand(cmdId) {
+            const cmd = suggestedCommandsMap[cmdId];
+            if (!cmd) return;
+
+            const statusEl = document.getElementById(`status_${cmdId}`);
+            const badgeEl = document.getElementById(`badge_${cmdId}`);
+            const resultEl = document.getElementById(`result_${cmdId}`);
+            const buttonsEl = document.getElementById(`buttons_${cmdId}`);
+
+            if (statusEl) statusEl.innerText = "⚡ Autonomous Executing...";
+            if (badgeEl) badgeEl.innerText = "🤖 Autonomous Action Running";
+            if (buttonsEl) buttonsEl.style.display = "none";
+
+            appendTerminalLog(cmd, "pending", "Running autonomous command...");
+
+            try {
+                const response = await fetch(`${SERVER_URL}/api/exec`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ command: cmd })
+                });
+                const res = await response.json();
+                if (res.status === "success") {
+                    appendTerminalLog(cmd, "success", res.stdout, res.stderr);
+                    if (statusEl) statusEl.innerText = "✅ Executed Autonomously";
+                    if (statusEl) statusEl.style.color = "var(--green)";
+                    if (resultEl) {
+                        resultEl.style.display = "block";
+                        resultEl.style.borderLeftColor = "var(--green)";
+                        resultEl.innerHTML = `<span style="color: var(--green);">[STDOUT]</span><br>${escapeHtml(res.stdout || 'Command completed with no output.')}`;
+                        if (res.stderr) {
+                            resultEl.innerHTML += `<br><span style="color: var(--red);">[STDERR]</span><br>${escapeHtml(res.stderr)}`;
+                        }
+                    }
+                } else {
+                    appendTerminalLog(cmd, "error", "", res.stderr || "Command failed");
+                    if (statusEl) statusEl.innerText = "❌ Execution Failed";
+                    if (statusEl) statusEl.style.color = "var(--red)";
+                    if (resultEl) {
+                        resultEl.style.display = "block";
+                        resultEl.style.borderLeftColor = "var(--red)";
+                        resultEl.innerHTML = `<span style="color: var(--red);">[ERROR]</span><br>${escapeHtml(res.stderr || "Command failed")}`;
+                    }
                 }
-            );
+            } catch (err) {
+                appendTerminalLog(cmd, "error", "", "Failed to connect to local server backend.");
+                if (statusEl) statusEl.innerText = "❌ Connection Failed";
+                if (statusEl) statusEl.style.color = "var(--red)";
+                if (resultEl) {
+                    resultEl.style.display = "block";
+                    resultEl.style.borderLeftColor = "var(--red)";
+                    resultEl.innerHTML = `<span style="color: var(--red);">[ERROR]</span><br>Failed to connect to local server backend. Make sure server.ps1 is running.`;
+                }
+            }
+        }
+
+        // --- DEEP RESEARCH MODE ---
+        let activeResearchReportText = "";
+
+        function handleResearchKey(e) {
+            if (e.key === 'Enter') {
+                executeResearch();
+            }
+        }
+
+        function startResearch(topic) {
+            document.getElementById('researchInput').value = topic;
+            executeResearch();
+        }
+
+        function resetResearchMode() {
+            document.getElementById('researchReport').style.display = 'none';
+            document.getElementById('researchWelcome').style.display = 'flex';
+            document.getElementById('researchInput').value = '';
+            activeResearchReportText = "";
+        }
+
+        function copyResearchReport() {
+            if (!activeResearchReportText) return;
+            navigator.clipboard.writeText(activeResearchReportText).then(() => {
+                showModal("System Notification", "Research report copied to clipboard successfully.");
+            }).catch(err => {
+                console.error("Clipboard copy failed:", err);
+            });
+        }
+
+        function speakResearchReport() {
+            if (!activeResearchReportText) return;
+            speakText(activeResearchReportText);
+        }
+
+        function renderMarkdown(text) {
+            if (!text) return '';
+            
+            let html = escapeHtml(text);
+            
+            // Code blocks
+            html = html.replace(/```(?:[a-zA-Z0-9]+)?\n([\s\S]*?)```/g, '<pre><code>$1</code></pre>');
+            
+            // Inline code
+            html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
+            
+            // Bold
+            html = html.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+            
+            // Headings
+            html = html.replace(/^### (.*$)/gim, '<h4 style="font-family: var(--font-display); color: var(--cyan); margin: 15px 0 10px 0; border-bottom: 1px solid rgba(0,240,255,0.1); padding-bottom: 4px;">$1</h4>');
+            html = html.replace(/^## (.*$)/gim, '<h3 style="font-family: var(--font-display); color: #fff; margin: 20px 0 10px 0; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 6px;">$1</h3>');
+            html = html.replace(/^# (.*$)/gim, '<h2 style="font-family: var(--font-display); color: #fff; margin: 25px 0 15px 0; text-shadow: var(--accent-glow);">$1</h2>');
+            
+            // Bullet points
+            const lines = html.split('\n');
+            let inList = false;
+            for (let i = 0; i < lines.length; i++) {
+                let line = lines[i].trim();
+                if (line.startsWith('- ') || line.startsWith('* ')) {
+                    if (!inList) {
+                        lines[i] = '<ul style="margin-left: 20px; margin-bottom: 10px; display: flex; flex-direction: column; gap: 5px;"><li>' + line.substring(2) + '</li>';
+                        inList = true;
+                    } else {
+                        lines[i] = '<li>' + line.substring(2) + '</li>';
+                    }
+                } else {
+                    if (inList) {
+                        lines[i] = '</ul>' + (line ? '<p style="margin-bottom: 15px;">' + line + '</p>' : '');
+                        inList = false;
+                    } else if (line && !line.startsWith('<h') && !line.startsWith('<pre') && !line.startsWith('</pre') && !line.startsWith('<code') && !line.startsWith('</code') && !line.startsWith('<ul') && !line.startsWith('</ul') && !line.startsWith('<li')) {
+                        lines[i] = '<p style="margin-bottom: 15px;">' + line + '</p>';
+                    }
+                }
+            }
+            if (inList) {
+                lines.push('</ul>');
+            }
+            
+            return lines.join('\n');
+        }
+
+        async function executeResearch() {
+            const inputEl = document.getElementById('researchInput');
+            const topic = inputEl.value.trim();
+            if (!topic) return;
+
+            inputEl.value = '';
+            document.getElementById('researchWelcome').style.display = 'none';
+            document.getElementById('researchReport').style.display = 'none';
+            document.getElementById('researchLoading').style.display = 'flex';
+            document.getElementById('researchStatusText').innerText = "JARVIS IS INITIATING INTELLECTUAL INQUIRY...";
+
+            const reactor = document.getElementById('jarvisReactor');
+            reactor.classList.add('thinking');
+
+            if (!GEMINI_API_KEY) {
+                setTimeout(() => {
+                    document.getElementById('researchLoading').style.display = 'none';
+                    document.getElementById('researchWelcome').style.display = 'flex';
+                    showModal("API Key Required", "Research mode requires an active Gemini API key. Please configure your key in Settings.");
+                    reactor.classList.remove('thinking');
+                }, 800);
+                return;
+            }
+
+            // Simple status rotator
+            let statusIdx = 0;
+            const statuses = [
+                "Formulating cognitive search queries...",
+                "Querying Google Search Grounding Index...",
+                "Retrieving authoritative search chunks...",
+                "Analyzing references and search corpus...",
+                "Drafting structured analytical brief..."
+            ];
+            const statusInterval = setInterval(() => {
+                document.getElementById('researchStatusText').innerText = `JARVIS: ${statuses[statusIdx].toUpperCase()}`;
+                statusIdx = (statusIdx + 1) % statuses.length;
+            }, 3000);
+
+            try {
+                let researchLangInstruction = "";
+                if (JARVIS_LANGUAGE === "ta-IN") {
+                    researchLangInstruction = "\n\nLANGUAGE REQUIREMENT: Conduct and write your entire research report in Tamil (தமிழ்). You can keep technical terms, formulas, and code blocks in English, but the descriptions, summaries, and headers must be in Tamil script.";
+                } else if (JARVIS_LANGUAGE === "bilingual") {
+                    researchLangInstruction = "\n\nLANGUAGE REQUIREMENT: Write the report in the language requested by the user (or Tamil if the topic is in Tamil or Tamil is specified). If not specified, default to English.";
+                }
+
+                const systemInstruction = "You are JARVIS's Research Terminal, an advanced analytical and scientific intelligence module designed by Google DeepMind. \n" +
+                                          "Your task is to conduct highly detailed, comprehensive, structured, and informative research on the topic requested by the user. \n" +
+                                          "You MUST utilize the Google Search tool to retrieve the most up-to-date and accurate information. \n" +
+                                          "Analyze the search results, organize the findings logically, and present them in a detailed report. \n" +
+                                          "Structure your report with professional Markdown: use clear headers, bullet points, technical definitions, and code examples where appropriate. \n" +
+                                          "Cite your sources where possible and summarize all key developments. Be direct, authoritative, and extremely detailed." +
+                                          researchLangInstruction;
+
+                const apiResponse = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${GEMINI_API_KEY}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [{
+                            role: "user",
+                            parts: [{ text: "Please perform deep research on the following topic and explain it in comprehensive detail: " + topic }]
+                        }],
+                        systemInstruction: {
+                            parts: [{ text: systemInstruction }]
+                        },
+                        tools: [{ google_search: {} }]
+                    })
+                });
+
+                clearInterval(statusInterval);
+
+                if (!apiResponse.ok) {
+                    throw new Error(`Gemini API Error: Status ${apiResponse.status}`);
+                }
+
+                const data = await apiResponse.json();
+                
+                if (!data.candidates || data.candidates.length === 0 || !data.candidates[0].content || !data.candidates[0].content.parts || data.candidates[0].content.parts.length === 0) {
+                    throw new Error("No response candidates returned from the cognitive matrix.");
+                }
+                
+                const reportText = data.candidates[0].content.parts[0].text;
+                activeResearchReportText = reportText;
+
+                document.getElementById('reportTitle').innerText = `RESEARCH REPORT: ${topic}`;
+                
+                const metadata = data.candidates[0].groundingMetadata;
+                let queriesHtml = "";
+                if (metadata && metadata.webSearchQueries && metadata.webSearchQueries.length > 0) {
+                    queriesHtml = `<div style="margin-bottom: 20px; font-size: 12px; font-family: var(--font-mono); color: var(--text-secondary); background: rgba(0,240,255,0.03); border: 1px solid var(--border-color); padding: 12px; border-radius: 8px;">`;
+                    queriesHtml += `🔍 <strong>Synthesized Search Queries:</strong> ` + metadata.webSearchQueries.map(q => `<code>${escapeHtml(q)}</code>`).join(', ');
+                    queriesHtml += `</div>`;
+                }
+
+                let sourcesHtml = "";
+                if (metadata && metadata.groundingChunks && metadata.groundingChunks.length > 0) {
+                    sourcesHtml += `<div style="margin-top: 30px; border-top: 1px dashed var(--border-color); padding-top: 15px;">`;
+                    sourcesHtml += `<h4 style="font-family: var(--font-display); color: var(--cyan); font-size: 12px; margin-bottom: 10px; text-transform: uppercase;">Sources & References</h4>`;
+                    sourcesHtml += `<ul style="margin-left: 20px; display: flex; flex-direction: column; gap: 8px;">`;
+                    metadata.groundingChunks.forEach(chunk => {
+                        if (chunk.web && chunk.web.uri) {
+                            const title = chunk.web.title || chunk.web.uri;
+                            sourcesHtml += `<li><a href="${chunk.web.uri}" target="_blank" style="color: var(--cyan); text-decoration: none; font-size: 13px; font-family: var(--font-mono); border-bottom: 1px dotted var(--cyan); transition: all 0.2s;" onmouseover="this.style.color='#fff'; this.style.borderBottomColor='#fff'" onmouseout="this.style.color='var(--cyan)'; this.style.borderBottomColor='var(--cyan)'">${escapeHtml(title)}</a></li>`;
+                        }
+                    });
+                    sourcesHtml += `</ul></div>`;
+                }
+
+                const reportContentEl = document.getElementById('reportContent');
+                reportContentEl.innerHTML = queriesHtml + renderMarkdown(reportText) + sourcesHtml;
+
+                document.getElementById('researchLoading').style.display = 'none';
+                document.getElementById('researchReport').style.display = 'block';
+
+                speakText(`Research on ${topic} completed successfully.`);
+
+            } catch (err) {
+                clearInterval(statusInterval);
+                console.error("Research request failed:", err);
+                document.getElementById('researchLoading').style.display = 'none';
+                document.getElementById('researchWelcome').style.display = 'flex';
+                showModal("Research System Error", `Disrupted link to Gemini Cognitive Matrix or Google search index: ${err.message}`);
+                speakText("Research request failed due to system error.");
+            } finally {
+                reactor.classList.remove('thinking');
+            }
         }
 
         // --- MODAL UTILS ---
@@ -1820,8 +2388,16 @@
             }
         }
 
+        let jarvisIsSpeaking = false;
+
         function speakText(text) {
-            if (isMuted) return;
+            if (isMuted) {
+                jarvisIsSpeaking = false;
+                if (continuousMicEnabled && !isListening) {
+                    startSpeechRecognitionQuietly();
+                }
+                return;
+            }
 
             // Strip out markdown code blocks and HTML tags to prevent reading code syntax
             let cleanText = text.replace(/```[\s\S]*?```/g, ""); // Strip code blocks
@@ -1829,28 +2405,257 @@
             cleanText = cleanText.replace(/<\/?[^>]+(>|$)/g, ""); // Strip HTML tags
             cleanText = cleanText.trim();
             
-            if (!cleanText) return;
+            if (!cleanText) {
+                jarvisIsSpeaking = false;
+                if (continuousMicEnabled && !isListening) {
+                    startSpeechRecognitionQuietly();
+                }
+                return;
+            }
+
+            // If we are listening, stop it so it doesn't pick up the speech synthesis
+            if (isListening && recognition) {
+                recognition.abort();
+            }
 
             // Cancel any active speak queue to play this immediately
             window.speechSynthesis.cancel();
 
             const utterance = new SpeechSynthesisUtterance(cleanText);
-            
-            // Choose a suitable voice (prefer premium English male or system default)
+            const containsTamil = /[\u0B80-\u0BFF]/.test(cleanText);
             const voices = window.speechSynthesis.getVoices();
-            const preferredVoice = voices.find(v => v.name.includes("Google UK English Male") || v.name.includes("Microsoft David") || v.lang.startsWith("en-GB"));
-            if (preferredVoice) {
-                utterance.voice = preferredVoice;
-            }
             
-            utterance.rate = 1.05; // Slightly faster for a smart feel
-            utterance.pitch = 0.95; // Slightly deeper for a solid assistant voice
+            if (containsTamil) {
+                // Find a Tamil voice
+                const tamilVoice = voices.find(v => v.lang.startsWith("ta") || v.name.toLowerCase().includes("tamil") || v.lang === "ta-IN");
+                if (tamilVoice) {
+                    utterance.voice = tamilVoice;
+                }
+                utterance.lang = 'ta-IN';
+                utterance.rate = 1.0; // Standard speed for Tamil
+                utterance.pitch = 1.0;
+            } else {
+                // Choose a suitable voice (prefer premium English male or system default)
+                const preferredVoice = voices.find(v => v.name.includes("Google UK English Male") || v.name.includes("Microsoft David") || v.lang.startsWith("en-GB"));
+                if (preferredVoice) {
+                    utterance.voice = preferredVoice;
+                }
+                utterance.rate = 1.05; // Slightly faster for a smart feel
+                utterance.pitch = 0.95; // Slightly deeper for a solid assistant voice
+            }
+
+            utterance.onstart = () => {
+                jarvisIsSpeaking = true;
+            };
+
+            const endOrError = () => {
+                jarvisIsSpeaking = false;
+                if (continuousMicEnabled && !isListening) {
+                    startSpeechRecognitionQuietly();
+                }
+            };
+
+            utterance.onend = endOrError;
+            utterance.onerror = (e) => {
+                console.error("SpeechSynthesis error:", e);
+                endOrError();
+            };
             
             window.speechSynthesis.speak(utterance);
+        }        let recognition = null;
+        let isListening = false;
+        let audioCtx = null;
+        let audioSource = null;
+        let analyser = null;
+        let audioStream = null;
+        let animationFrameId = null;
+
+        async function startAudioVisualizer() {
+            try {
+                if (!audioCtx) {
+                    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                }
+                
+                // Request microphone permission and get stream
+                audioStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                
+                audioSource = audioCtx.createMediaStreamSource(audioStream);
+                analyser = audioCtx.createAnalyser();
+                analyser.fftSize = 64; // Small size for volume tracking
+                
+                audioSource.connect(analyser);
+                
+                const bufferLength = analyser.frequencyBinCount;
+                const dataArray = new Uint8Array(bufferLength);
+                
+                const reactor = document.getElementById('jarvisReactor');
+                const outerRing = reactor ? reactor.querySelector('.reactor-ring-outer') : null;
+                const midRing = reactor ? reactor.querySelector('.reactor-ring-mid') : null;
+                const innerRing = reactor ? reactor.querySelector('.reactor-ring-inner') : null;
+                const core = reactor ? reactor.querySelector('.reactor-core') : null;
+                const voiceBtn = document.getElementById('voiceBtn');
+                
+                function draw() {
+                    if (!isListening) return;
+                    animationFrameId = requestAnimationFrame(draw);
+                    
+                    analyser.getByteFrequencyData(dataArray);
+                    
+                    // Calculate average volume
+                    let total = 0;
+                    for (let i = 0; i < bufferLength; i++) {
+                        total += dataArray[i];
+                    }
+                    const average = total / bufferLength; // 0 to 255
+                    const volumeNorm = average / 255; // 0 to 1
+                    
+                    // Apply animations based on voice volume
+                    const scale = 1 + volumeNorm * 0.45; // Scale up core by up to 45%
+                    const glow = 15 + volumeNorm * 45; // Glowing intensity
+                    const speed = 1 + volumeNorm * 8; // Rotate faster based on volume
+                    
+                    // Animate core glow and size
+                    if (core) {
+                        core.style.transform = `scale(${scale})`;
+                        core.style.boxShadow = `0 0 ${glow}px ${volumeNorm > 0.05 ? 'var(--red)' : 'var(--cyan)'}`;
+                        if (volumeNorm > 0.05) {
+                            core.style.background = `radial-gradient(circle, #fff 0%, var(--red) 60%, rgba(239, 68, 68, 0) 100%)`;
+                        } else {
+                            core.style.background = `radial-gradient(circle, #fff 0%, var(--purple) 60%, rgba(217, 70, 239, 0) 100%)`;
+                        }
+                    }
+                    
+                    // Animate rings
+                    if (outerRing) {
+                        outerRing.style.transform = `rotate(${Date.now() / 80 * speed}deg) scale(${1 + volumeNorm * 0.2})`;
+                        outerRing.style.borderColor = volumeNorm > 0.05 ? 'var(--red)' : 'var(--purple)';
+                    }
+                    if (midRing) {
+                        midRing.style.transform = `rotate(-${Date.now() / 120 * speed}deg) scale(${1 - volumeNorm * 0.15})`;
+                        midRing.style.borderColor = volumeNorm > 0.05 ? 'var(--cyan)' : 'var(--purple)';
+                    }
+                    if (innerRing) {
+                        innerRing.style.transform = `rotate(${Date.now() / 60 * speed}deg)`;
+                    }
+                    
+                    // Make the mic button glow and pulse according to sound levels
+                    if (voiceBtn) {
+                        voiceBtn.style.filter = `drop-shadow(0 0 ${4 + volumeNorm * 12}px var(--red))`;
+                        voiceBtn.style.transform = `scale(${1 + volumeNorm * 0.25})`;
+                    }
+                }
+                
+                draw();
+            } catch (err) {
+                console.error("Error starting audio visualizer:", err);
+            }
         }
 
-        let recognition = null;
-        let isListening = false;
+        function stopAudioVisualizer() {
+            if (animationFrameId) {
+                cancelAnimationFrame(animationFrameId);
+                animationFrameId = null;
+            }
+            if (audioStream) {
+                audioStream.getTracks().forEach(track => track.stop());
+                audioStream = null;
+            }
+            
+            // Reset reactor styles to default transitions
+            const reactor = document.getElementById('jarvisReactor');
+            const outerRing = reactor ? reactor.querySelector('.reactor-ring-outer') : null;
+            const midRing = reactor ? reactor.querySelector('.reactor-ring-mid') : null;
+            const innerRing = reactor ? reactor.querySelector('.reactor-ring-inner') : null;
+            const core = reactor ? reactor.querySelector('.reactor-core') : null;
+            const voiceBtn = document.getElementById('voiceBtn');
+            
+            if (core) {
+                core.style.transform = '';
+                core.style.boxShadow = '';
+                core.style.background = '';
+            }
+            if (outerRing) {
+                outerRing.style.transform = '';
+                outerRing.style.borderColor = '';
+            }
+            if (midRing) {
+                midRing.style.transform = '';
+                midRing.style.borderColor = '';
+            }
+            if (innerRing) {
+                innerRing.style.transform = '';
+            }
+            if (voiceBtn) {
+                voiceBtn.style.filter = '';
+                voiceBtn.style.transform = '';
+            }
+        }
+
+        function startSpeechRecognitionQuietly() {
+            if (!recognition) {
+                initSpeechRecognition();
+            }
+            if (!recognition) return;
+            if (isListening) return;
+
+            try {
+                recognition.start();
+            } catch (e) {
+                console.warn("Speech recognition start warning:", e);
+                // If it fails because it's already starting/running, retry once after a short delay
+                if (e.name === 'InvalidStateError' || e.message?.includes('already started')) {
+                    setTimeout(() => {
+                        if (continuousMicEnabled && !isListening && !jarvisIsSpeaking) {
+                            try {
+                                recognition.start();
+                            } catch (err) {
+                                console.error("Retry start speech recognition failed:", err);
+                            }
+                        }
+                    }, 400);
+                }
+            }
+        }
+
+        function toggleContinuousMic() {
+            continuousMicEnabled = document.getElementById('continuousMicToggle').checked;
+            localStorage.setItem('jarvis_continuous_mic', continuousMicEnabled ? "true" : "false");
+            document.getElementById('settingsContinuousMic').checked = continuousMicEnabled;
+            
+            if (continuousMicEnabled) {
+                if (!isListening && !jarvisIsSpeaking) {
+                    startSpeechRecognitionQuietly();
+                }
+            } else {
+                if (isListening && recognition) {
+                    recognition.stop();
+                }
+            }
+        }
+
+        function toggleAutoTransmit() {
+            autoTransmitEnabled = document.getElementById('autoTransmitToggle').checked;
+            localStorage.setItem('jarvis_auto_transmit', autoTransmitEnabled ? "true" : "false");
+            document.getElementById('settingsAutoTransmit').checked = autoTransmitEnabled;
+        }
+
+        function changeSpeechLanguage(langCode) {
+            ACTIVE_SPEECH_LANG = langCode;
+            localStorage.setItem("jarvis_active_speech_lang", langCode);
+            document.getElementById('speechLangSelect').value = langCode;
+            if (recognition) {
+                recognition.lang = langCode;
+                // If currently listening, stop and restart to apply new language
+                if (isListening) {
+                    recognition.stop();
+                    setTimeout(() => {
+                        if (!isListening && continuousMicEnabled && !jarvisIsSpeaking) {
+                            startSpeechRecognitionQuietly();
+                        }
+                    }, 400);
+                }
+            }
+        }
 
         function initSpeechRecognition() {
             const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -1862,20 +2667,29 @@
 
             recognition = new SpeechRecognition();
             recognition.continuous = false;
-            recognition.interimResults = false;
-            recognition.lang = 'en-US';
+            recognition.interimResults = true; // Enabled interim results for live typing feedback!
+            recognition.lang = ACTIVE_SPEECH_LANG;
 
             recognition.onstart = () => {
                 isListening = true;
                 const voiceBtn = document.getElementById('voiceBtn');
-                voiceBtn.style.color = "var(--red)";
-                voiceBtn.style.filter = "drop-shadow(0 0 5px var(--red))";
-                document.getElementById('jarvisReactor').classList.add('thinking');
+                if (voiceBtn) {
+                    voiceBtn.style.color = "var(--red)";
+                    voiceBtn.style.filter = "drop-shadow(0 0 5px var(--red))";
+                }
+                const reactor = document.getElementById('jarvisReactor');
+                if (reactor) {
+                    reactor.classList.add('thinking');
+                }
                 document.getElementById('chatInput').placeholder = "Listening to vocal inputs...";
+                startAudioVisualizer(); // Start visualizer
             };
 
             recognition.onresult = (event) => {
-                const transcript = event.results[0][0].transcript;
+                let transcript = '';
+                for (let i = 0; i < event.results.length; i++) {
+                    transcript += event.results[i][0].transcript;
+                }
                 document.getElementById('chatInput').value = transcript;
             };
 
@@ -1904,17 +2718,36 @@
                 // Auto-transmit recognized speech
                 const inputVal = document.getElementById('chatInput').value.trim();
                 if (inputVal) {
-                    sendMessage();
+                    if (autoTransmitEnabled) {
+                        sendMessage();
+                    } else {
+                        document.getElementById('chatInput').focus();
+                    }
+                } else {
+                    // Silence timeout - auto-restart if continuous mode is enabled and Jarvis is not speaking
+                    if (continuousMicEnabled && !jarvisIsSpeaking) {
+                        setTimeout(() => {
+                            if (continuousMicEnabled && !isListening && !jarvisIsSpeaking) {
+                                startSpeechRecognitionQuietly();
+                            }
+                        }, 300);
+                    }
                 }
             };
         }
 
         function stopListeningState() {
             isListening = false;
+            stopAudioVisualizer(); // Stop visualizer
             const voiceBtn = document.getElementById('voiceBtn');
-            voiceBtn.style.color = "var(--cyan)";
-            voiceBtn.style.filter = "none";
-            document.getElementById('jarvisReactor').classList.remove('thinking');
+            if (voiceBtn) {
+                voiceBtn.style.color = "var(--cyan)";
+                voiceBtn.style.filter = "none";
+            }
+            const reactor = document.getElementById('jarvisReactor');
+            if (reactor) {
+                reactor.classList.remove('thinking');
+            }
             document.getElementById('chatInput').placeholder = "Awaiting vocal inputs or terminal commands...";
         }
 
@@ -1925,12 +2758,30 @@
             if (!recognition) return;
 
             if (isListening) {
+                if (continuousMicEnabled) {
+                    continuousMicEnabled = false;
+                    document.getElementById('continuousMicToggle').checked = false;
+                    document.getElementById('settingsContinuousMic').checked = false;
+                    localStorage.setItem('jarvis_continuous_mic', "false");
+                }
                 recognition.stop();
             } else {
                 document.getElementById('chatInput').value = '';
-                recognition.start();
+                try {
+                    recognition.start();
+                } catch (e) {
+                    console.error("Failed to start speech recognition:", e);
+                }
             }
         }
+
+        // Add keyboard shortcut to toggle voice with Alt + V
+        window.addEventListener('keydown', (e) => {
+            if (e.altKey && e.key.toLowerCase() === 'v') {
+                e.preventDefault();
+                toggleVoice();
+            }
+        });
 
         // --- FILE UPLOAD FUNCTIONALITY ---
         async function uploadFile() {
@@ -1985,6 +2836,14 @@
         function loadSettingsToUI() {
             document.getElementById('settingsApiKey').value = localStorage.getItem("jarvis_api_key") || "";
             document.getElementById('settingsModel').value = GEMINI_MODEL;
+            document.getElementById('settingsLanguage').value = JARVIS_LANGUAGE;
+            document.getElementById('speechLangSelect').value = ACTIVE_SPEECH_LANG;
+            document.getElementById('settingsAutonomous').checked = isAutonomousMode;
+            document.getElementById('settingsServerUrl').value = localStorage.getItem("jarvis_server_url") || "";
+            document.getElementById('settingsContinuousMic').checked = continuousMicEnabled;
+            document.getElementById('settingsAutoTransmit').checked = autoTransmitEnabled;
+            document.getElementById('continuousMicToggle').checked = continuousMicEnabled;
+            document.getElementById('autoTransmitToggle').checked = autoTransmitEnabled;
         }
 
         function toggleApiKeyVisibility() {
@@ -1999,6 +2858,23 @@
         function saveSettings() {
             const apiVal = document.getElementById('settingsApiKey').value.trim();
             const modelVal = document.getElementById('settingsModel').value;
+            const langVal = document.getElementById('settingsLanguage').value;
+            const autoVal = document.getElementById('settingsAutonomous').checked;
+            const serverUrlVal = document.getElementById('settingsServerUrl').value.trim();
+            const continuousMicVal = document.getElementById('settingsContinuousMic').checked;
+            const autoTransmitVal = document.getElementById('settingsAutoTransmit').checked;
+
+            localStorage.setItem("jarvis_language", langVal);
+            JARVIS_LANGUAGE = langVal;
+
+            if (JARVIS_LANGUAGE !== "bilingual") {
+                ACTIVE_SPEECH_LANG = JARVIS_LANGUAGE;
+                localStorage.setItem("jarvis_active_speech_lang", ACTIVE_SPEECH_LANG);
+                document.getElementById('speechLangSelect').value = ACTIVE_SPEECH_LANG;
+                if (recognition) {
+                    recognition.lang = ACTIVE_SPEECH_LANG;
+                }
+            }
 
             if (apiVal) {
                 localStorage.setItem("jarvis_api_key", apiVal);
@@ -2011,7 +2887,33 @@
             localStorage.setItem("jarvis_model", modelVal);
             GEMINI_MODEL = modelVal;
 
-            showModal("System Reconfigured", `API Configuration applied successfully.<br><br>Model: <b>${GEMINI_MODEL}</b><br>API Key: <b>${apiVal ? "User Custom Key" : "Default Built-In Key"}</b>`, () => {
+            localStorage.setItem("jarvis_autonomous", autoVal ? "true" : "false");
+            isAutonomousMode = autoVal;
+
+            localStorage.setItem("jarvis_continuous_mic", continuousMicVal ? "true" : "false");
+            continuousMicEnabled = continuousMicVal;
+            document.getElementById('continuousMicToggle').checked = continuousMicEnabled;
+
+            localStorage.setItem("jarvis_auto_transmit", autoTransmitVal ? "true" : "false");
+            autoTransmitEnabled = autoTransmitVal;
+            document.getElementById('autoTransmitToggle').checked = autoTransmitEnabled;
+
+            if (serverUrlVal) {
+                localStorage.setItem("jarvis_server_url", serverUrlVal);
+                SERVER_URL = serverUrlVal;
+            } else {
+                localStorage.removeItem("jarvis_server_url");
+                SERVER_URL = window.location.origin && window.location.origin.startsWith('http') 
+                    ? window.location.origin 
+                    : "http://localhost:9000";
+            }
+
+            // If continuous mode is enabled and we are not listening, start it!
+            if (continuousMicEnabled && !isListening && !jarvisIsSpeaking) {
+                startSpeechRecognitionQuietly();
+            }
+
+            showModal("System Reconfigured", `API Configuration applied successfully.<br><br>Model: <b>${GEMINI_MODEL}</b><br>Autonomous Mode: <b>${isAutonomousMode ? "ENABLED" : "DISABLED"}</b><br>Server: <b>${SERVER_URL}</b>`, () => {
                 fetchSystemStats();
             });
         }
@@ -2019,21 +2921,85 @@
         function resetSettings() {
             localStorage.removeItem("jarvis_api_key");
             localStorage.removeItem("jarvis_model");
+            localStorage.removeItem("jarvis_language");
+            localStorage.removeItem("jarvis_active_speech_lang");
+            localStorage.removeItem("jarvis_autonomous");
+            localStorage.removeItem("jarvis_server_url");
+            localStorage.removeItem("jarvis_continuous_mic");
+            localStorage.removeItem("jarvis_auto_transmit");
             
             GEMINI_API_KEY = DEFAULT_API_KEY;
             GEMINI_MODEL = DEFAULT_MODEL;
+            JARVIS_LANGUAGE = "en-US";
+            ACTIVE_SPEECH_LANG = "en-US";
+            isAutonomousMode = true;
+            continuousMicEnabled = false;
+            autoTransmitEnabled = true;
+            SERVER_URL = window.location.origin && window.location.origin.startsWith('http') 
+                ? window.location.origin 
+                : "http://localhost:9000";
 
             document.getElementById('settingsApiKey').value = "";
             document.getElementById('settingsModel').value = DEFAULT_MODEL;
+            document.getElementById('settingsLanguage').value = "en-US";
+            document.getElementById('speechLangSelect').value = "en-US";
+            document.getElementById('settingsAutonomous').checked = true;
+            document.getElementById('settingsServerUrl').value = "";
+            document.getElementById('settingsContinuousMic').checked = false;
+            document.getElementById('settingsAutoTransmit').checked = true;
+            document.getElementById('continuousMicToggle').checked = false;
+            document.getElementById('autoTransmitToggle').checked = true;
 
             showModal("System Reset", "All API settings have been restored to their defaults.", () => {
                 fetchSystemStats();
             });
         }
 
+        // Gracefully shutdown telemetry server and close session
+        function terminateServerSession() {
+            showModal(
+                "Terminate Dashboard Session",
+                "Are you sure you want to shut down the JARVIS local telemetry server and terminate this session? You will need to run run_jarvis.bat again to restart it.",
+                async () => {
+                    try {
+                        const response = await fetch(`${SERVER_URL}/api/shutdown`, {
+                            method: 'POST'
+                        });
+                        const result = await response.json();
+                        if (result.status === "success") {
+                            appendTerminalLog("Stop-Service Jarvis", "success", "Server shutdown initiated.");
+                            alert("JARVIS telemetry server has been shut down. You can now close this tab.");
+                            window.close();
+                        }
+                    } catch (err) {
+                        alert("Failed to communicate shutdown command to the server.");
+                    }
+                }
+            );
+        }
+
+        // Fetch host configuration from the PowerShell server
+        async function fetchHostConfig() {
+            try {
+                const response = await fetch(`${SERVER_URL}/api/config`);
+                if (response.ok) {
+                    const config = await response.json();
+                    if (config.apiKey) {
+                        // If user hasn't set a custom key in localStorage, use the server's environment key
+                        if (!localStorage.getItem("jarvis_api_key")) {
+                            GEMINI_API_KEY = config.apiKey;
+                        }
+                    }
+                }
+            } catch (err) {
+                console.warn("Failed to retrieve host configuration:", err);
+            }
+        }
+
         // Initialize Page
-        window.addEventListener('load', () => {
+        window.addEventListener('load', async () => {
             loadSettingsToUI();
+            await fetchHostConfig();
             fetchSystemStats();
             initSpeechRecognition();
             // Start polling system specs every 4 seconds
@@ -2046,7 +3012,13 @@
 
             // Speak greeting on startup
             setTimeout(() => {
-                speakText("Jarvis systems online. Telemetry channels fully operational.");
+                if (JARVIS_LANGUAGE === "ta-IN") {
+                    speakText("ஜார்விஸ் செயல்பாட்டுக்கு தயாராக உள்ளது. அனைத்து அமைப்புகளும் ஆன்லைனில் உள்ளன.");
+                } else if (JARVIS_LANGUAGE === "bilingual") {
+                    speakText("ஜார்விஸ் சிஸ்டம்ஸ் ஆன்லைன். Jarvis systems online and fully operational.");
+                } else {
+                    speakText("Jarvis systems online. Telemetry channels fully operational.");
+                }
             }, 1000);
         });
     </script>
